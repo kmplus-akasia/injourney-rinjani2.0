@@ -569,7 +569,7 @@ export function AppShell({
           </header>
 
           <main className="min-h-0 flex-1 overflow-y-auto bg-primary">
-            <div className="relative min-h-full overflow-hidden rounded-tl-[32px] border-l border-white/20 bg-background shadow-[inset_0_1px_0_rgba(255,255,255,0.65),0_20px_60px_rgba(16,24,40,0.08)]">
+            <div className="relative min-h-full overflow-hidden rounded-tl-[32px] border-l border-white/20 bg-background text-foreground shadow-[inset_0_1px_0_rgba(255,255,255,0.65),0_20px_60px_rgba(16,24,40,0.08)]">
               {children}
             </div>
           </main>
