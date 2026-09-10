@@ -236,7 +236,7 @@ export function CycleList() {
                 filteredCycles.map((cycle) => (
                   <tr key={cycle.id} className="hover:bg-muted/20 transition-colors group">
                     <td className="px-4 py-3">
-                      <Link to={`/360-assessment-hq/${cycle.id}`} className="font-medium text-foreground hover:text-primary transition-colors block">
+                      <Link to={`/talent/360-assessment-hq/${cycle.id}`} className="font-medium text-foreground hover:text-primary transition-colors block">
                         {cycle.name}
                       </Link>
                       <div className="text-xs text-muted-foreground mt-0.5">
@@ -262,7 +262,7 @@ export function CycleList() {
                       <div className="inline-flex gap-2">
                         {["draft"].includes(cycle.status) && (
                           <Link 
-                            to={`/360-assessment-hq/${cycle.id}/edit`}
+                            to={`/talent/360-assessment-hq/${cycle.id}/edit`}
                             className="p-1.5 text-muted-foreground hover:text-foreground hover:bg-muted rounded transition-colors"
                             title="Edit"
                           >
@@ -271,7 +271,7 @@ export function CycleList() {
                         )}
                          {["active", "configuring", "assigning"].includes(cycle.status) && (
                           <Link 
-                            to={`/360-assessment-hq/${cycle.id}/monitoring`}
+                            to={`/talent/360-assessment-hq/${cycle.id}/monitoring`}
                             className="p-1.5 text-muted-foreground hover:text-primary hover:bg-primary/10 rounded transition-colors"
                             title="Monitor"
                           >
@@ -280,7 +280,7 @@ export function CycleList() {
                         )}
                         {["scoring", "validated", "published", "closed"].includes(cycle.status) && (
                           <Link 
-                            to={`/360-assessment-hq/${cycle.id}/results`}
+                            to={`/talent/360-assessment-hq/${cycle.id}/results`}
                             className="p-1.5 text-muted-foreground hover:text-primary hover:bg-primary/10 rounded transition-colors"
                             title="Lihat Hasil"
                           >
@@ -288,7 +288,7 @@ export function CycleList() {
                           </Link>
                         )}
                          <Link 
-                            to={`/360-assessment-hq/${cycle.id}`}
+                            to={`/talent/360-assessment-hq/${cycle.id}`}
                             className="p-1.5 text-muted-foreground hover:text-primary hover:bg-primary/10 rounded transition-colors"
                             title="Detail"
                           >

@@ -304,8 +304,53 @@ export const assessmentResults = [
     overall_score: 4.82,
     overall_max_score: 6.00,
     status: "published",
-    competency_scores: [], // Shortened for brevity
-    channel_breakdown: [],
+    competency_scores: [
+      {
+        competency_name: "Amanah",
+        score: 5.10,
+        max_score: 6.00,
+        behavior_scores: [{ behavior_indicator: "Memenuhi janji dan komitmen", score: 5.10, max_score: 6.00 }]
+      },
+      {
+        competency_name: "Kompeten",
+        score: 4.80,
+        max_score: 6.00,
+        behavior_scores: [{ behavior_indicator: "Terus belajar dan mengembangkan kapabilitas", score: 4.80, max_score: 6.00 }]
+      },
+      {
+        competency_name: "Harmonis",
+        score: 5.20,
+        max_score: 6.00,
+        behavior_scores: [{ behavior_indicator: "Saling peduli dan menghargai perbedaan", score: 5.20, max_score: 6.00 }]
+      },
+      {
+        competency_name: "Loyal",
+        score: 5.00,
+        max_score: 6.00,
+        behavior_scores: [{ behavior_indicator: "Berdedikasi dan mengutamakan kepentingan organisasi", score: 5.00, max_score: 6.00 }]
+      },
+      {
+        competency_name: "Adaptif",
+        score: 4.20,
+        max_score: 6.00,
+        behavior_scores: [{ behavior_indicator: "Terus berinovasi dan antusias menghadapi perubahan", score: 4.20, max_score: 6.00 }]
+      },
+      {
+        competency_name: "Kolaboratif",
+        score: 4.90,
+        max_score: 6.00,
+        behavior_scores: [
+          { behavior_indicator: "Membangun kerja sama sinergis", score: 5.00, max_score: 6.00 },
+          { behavior_indicator: "Memberi kesempatan kepada berbagai pihak untuk berkontribusi", score: 4.80, max_score: 6.00 }
+        ]
+      }
+    ],
+    channel_breakdown: [
+      { channel: "superior", weight: 40, raw_score: 4.90, weighted_score: 1.96, assessor_count: 1, completion_rate: 1.0 },
+      { channel: "peer", weight: 30, raw_score: 4.70, weighted_score: 1.41, assessor_count: 4, completion_rate: 1.0 },
+      { channel: "subordinate", weight: 20, raw_score: 4.85, weighted_score: 0.97, assessor_count: 2, completion_rate: 1.0 },
+      { channel: "self", weight: 10, raw_score: 4.80, weighted_score: 0.48, assessor_count: 1, completion_rate: 1.0 }
+    ],
   },
   {
     id: "RES-003",
@@ -339,3 +384,31 @@ export const employees = [
 ];
 
 export const currentUser = employees[0];
+
+export function completeAssignment(id: string) {
+  const assignment = assessorAssignments.find((item) => item.id === id);
+  if (assignment) {
+    assignment.status = "completed";
+  }
+}
+
+export function findPreviousPublishedResult(resultId: string) {
+  const current = assessmentResults.find((item) => item.id === resultId);
+  if (!current) return undefined;
+  const currentCycle = assessmentCycles.find((item) => item.id === current.cycle_id);
+  if (!currentCycle) return undefined;
+
+  return assessmentResults
+    .filter((item) => {
+      if (item.id === current.id || item.assessee_id !== current.assessee_id || item.status !== "published") {
+        return false;
+      }
+      const cycle = assessmentCycles.find((entry) => entry.id === item.cycle_id);
+      return Boolean(cycle && cycle.assessment_type === currentCycle.assessment_type && cycle.start_date < currentCycle.start_date);
+    })
+    .sort((a, b) => {
+      const cycleA = assessmentCycles.find((entry) => entry.id === a.cycle_id);
+      const cycleB = assessmentCycles.find((entry) => entry.id === b.cycle_id);
+      return (cycleB?.start_date ?? "").localeCompare(cycleA?.start_date ?? "");
+    })[0];
+}

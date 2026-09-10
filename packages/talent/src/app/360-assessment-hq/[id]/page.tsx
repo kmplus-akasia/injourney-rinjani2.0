@@ -6,7 +6,7 @@ export default function CycleDetailRedirect() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    navigate(`/360-assessment-hq/${id}/assessors`, { replace: true });
+    navigate(`/talent/360-assessment-hq/${id}/assessors`, { replace: true });
   }, [id, navigate]);
 
   return null;

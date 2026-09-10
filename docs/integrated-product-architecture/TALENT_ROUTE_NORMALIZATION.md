@@ -24,6 +24,7 @@ Talent is now normalized under `/talent/*`.
 | `/my-applications/:id` | `/talent/my-applications/:id` |
 | `/saved` | `/talent/saved` |
 | `/org-management` | `/talent/org-management` |
+| `/org-management/positions/:id` | `/talent/org-management/positions/:id` |
 | `/enterprise-architecture` | `/talent/enterprise-architecture` |
 | `/idp` | `/talent/idp` |
 | `/idp/dashboard` | `/talent/idp/dashboard` |
@@ -46,6 +47,11 @@ Talent is now normalized under `/talent/*`.
 | `/admin/idp/approvals` | `/talent/admin/idp/approvals` |
 | `/admin/idp/reports` | `/talent/admin/idp/reports` |
 | `/admin/job-tender` | `/talent/admin/job-tender` |
+| `/admin/job-tender/create` | `/talent/admin/job-tender/create` |
+| `/admin/job-tender/:id` | `/talent/admin/job-tender/:id` |
+| `/competency-assessment` | `/talent/competency-assessment` |
+| `/competency-assessment/fill/:id` | `/talent/competency-assessment/fill/:id` |
+| `/competency-assessment/report/:id` | `/talent/competency-assessment/report/:id` |
 | `/360-assessment` | `/talent/360-assessment` |
 | `/360-assessment/assigned` | `/talent/360-assessment/assigned` |
 | `/360-assessment/fill/:id` | `/talent/360-assessment/fill/:id` |

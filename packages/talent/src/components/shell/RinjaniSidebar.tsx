@@ -75,6 +75,7 @@ const navigationGroups: NavGroup[] = [
       { label: "Career Aspiration", path: "/talent/career-aspiration", icon: Target, description: "Kelola Aspirasi Karir Pekerja" },
       { label: "Development Plan", path: "/talent/idp", icon: ClipboardList, description: "Individual Development" },
       { label: "360 Assessment", path: "/talent/360-assessment", icon: PieChart, description: "Multi-source Feedback" },
+      { label: "Competency Assessment", path: "/talent/competency-assessment", icon: Target, description: "Self Assessment Tools" },
       { label: "Job Tender Marketplace", path: "/talent/explore", icon: Briefcase, description: "Internal Job Opportunities" }
     ]
   },
@@ -92,7 +93,8 @@ const navigationGroups: NavGroup[] = [
     items: [
       { label: "Job Tender Headquarters", path: "/talent/admin/job-tender", icon: Briefcase, description: "Manage Tenders" },
       { label: "IDP Headquarters", path: "/talent/admin/idp", icon: ClipboardList, description: "IDP Administration" },
-      { label: "360 Assessment HQ", path: "/talent/360-assessment-hq", icon: PieChart, description: "Manage Assessments" }
+      { label: "360 Assessment HQ", path: "/talent/360-assessment-hq", icon: PieChart, description: "Manage Assessments" },
+      { label: "Organization Management", path: "/talent/org-management", icon: Briefcase, description: "Position Master" }
     ]
   }
 ];

@@ -309,7 +309,7 @@ function AssessmentCard({ assignment }: { assignment: any }) {
 
   return (
     <button
-      onClick={() => !isCompleted && navigate(`/360-assessment/fill/${assignment.id}`)}
+      onClick={() => !isCompleted && navigate(`/talent/360-assessment/fill/${assignment.id}`)}
       disabled={isCompleted}
       className={cn(
         "w-full flex items-center justify-between p-4 bg-card border border-border rounded-lg transition-all text-left group",

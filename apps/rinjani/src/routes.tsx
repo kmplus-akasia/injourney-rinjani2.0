@@ -279,7 +279,11 @@ export const router = createHashRouter([
                       { path: "job-tender", element: <Navigate to="/talent/explore" replace /> },
                       {
                         path: "org-management",
-                        element: <talentPages.ComingSoon moduleName="Organization Management" title="Modul Organisasi" description="Fitur pengelolaan struktur organisasi sedang dalam pengembangan." />
+                        element: <AdminOnly><talentPages.OrganizationManagementPage /></AdminOnly>
+                      },
+                      {
+                        path: "org-management/positions/:id",
+                        element: <AdminOnly><talentPages.OrganizationPositionDetailPage /></AdminOnly>
                       },
                       { path: "idp", element: <talentPages.IDPDashboardScreen /> },
                       { path: "idp/dashboard", element: <talentPages.IDPDashboardScreen /> },
@@ -302,6 +306,11 @@ export const router = createHashRouter([
                       { path: "admin/idp/approvals", element: <AdminOnly><talentPages.ComingSoon moduleName="IDP Admin" title="Persetujuan IDP" layout="admin" /></AdminOnly> },
                       { path: "admin/idp/reports", element: <AdminOnly><talentPages.ComingSoon moduleName="IDP Admin" title="Laporan IDP" layout="admin" /></AdminOnly> },
                       { path: "admin/job-tender", element: <AdminOnly><talentPages.JobTenderDashboardScreen /></AdminOnly> },
+                      { path: "admin/job-tender/create", element: <AdminOnly><talentPages.JobTenderCreateVacancyScreen /></AdminOnly> },
+                      { path: "admin/job-tender/:id", element: <AdminOnly><talentPages.JobTenderVacancyDetailScreen /></AdminOnly> },
+                      { path: "competency-assessment", element: <talentPages.CompetencyAssessmentPage /> },
+                      { path: "competency-assessment/fill/:id", element: <talentPages.CompetencySelfAssessmentFillPage /> },
+                      { path: "competency-assessment/report/:id", element: <talentPages.CompetencyEvaluationReportPage /> },
                       { path: "360-assessment", element: <talentPages.Assessment360Page /> },
                       { path: "360-assessment/assigned", element: <talentPages.Assessment360Page /> },
                       { path: "360-assessment/fill/:id", element: <talentPages.FillQuestionnairePage /> },
@@ -330,6 +339,7 @@ export const router = createHashRouter([
                   { path: "saved", element: <Navigate to="/talent/saved" replace /> },
                   { path: "job-tender", element: <Navigate to="/talent/job-tender" replace /> },
                   { path: "org-management", element: <Navigate to="/talent/org-management" replace /> },
+                  { path: "org-management/positions/:id", element: <LegacyTalentRedirect buildPath={({ id }) => `/talent/org-management/positions/${id ?? ""}`} /> },
                   { path: "idp", element: <Navigate to="/talent/idp" replace /> },
                   { path: "idp/dashboard", element: <Navigate to="/talent/idp/dashboard" replace /> },
                   { path: "idp/gap-analysis", element: <Navigate to="/talent/idp/gap-analysis" replace /> },
@@ -351,6 +361,11 @@ export const router = createHashRouter([
                   { path: "admin/idp/approvals", element: <Navigate to="/talent/admin/idp/approvals" replace /> },
                   { path: "admin/idp/reports", element: <Navigate to="/talent/admin/idp/reports" replace /> },
                   { path: "admin/job-tender", element: <Navigate to="/talent/admin/job-tender" replace /> },
+                  { path: "admin/job-tender/create", element: <Navigate to="/talent/admin/job-tender/create" replace /> },
+                  { path: "admin/job-tender/:id", element: <LegacyTalentRedirect buildPath={({ id }) => `/talent/admin/job-tender/${id ?? ""}`} /> },
+                  { path: "competency-assessment", element: <Navigate to="/talent/competency-assessment" replace /> },
+                  { path: "competency-assessment/fill/:id", element: <LegacyTalentRedirect buildPath={({ id }) => `/talent/competency-assessment/fill/${id ?? ""}`} /> },
+                  { path: "competency-assessment/report/:id", element: <LegacyTalentRedirect buildPath={({ id }) => `/talent/competency-assessment/report/${id ?? ""}`} /> },
                   { path: "360-assessment", element: <Navigate to="/talent/360-assessment" replace /> },
                   { path: "360-assessment/assigned", element: <Navigate to="/talent/360-assessment/assigned" replace /> },
                   { path: "360-assessment/fill/:id", element: <LegacyTalentRedirect buildPath={({ id }) => `/talent/360-assessment/fill/${id ?? ""}`} /> },
