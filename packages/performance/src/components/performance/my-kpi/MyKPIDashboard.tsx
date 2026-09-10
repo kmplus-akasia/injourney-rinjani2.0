@@ -43,7 +43,7 @@ export function MyKPIDashboard() {
   return (
     <div className="p-6 space-y-6 bg-gray-50/50 min-h-screen relative">
       {/* Simulation Switcher */}
-      <div className="absolute top-4 right-4 z-50">
+      <div className="flex justify-end">
         <select 
           className="bg-white border border-gray-300 text-gray-700 py-1 px-3 rounded-md text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
           value={
