@@ -42,6 +42,7 @@ import {
 } from "@rinjani/shared-ui";
 
 const dimasAvatarUrl = new URL("../../portal/src/assets/7e7006a4927bcec25694136f88b3db870eacf73b.png", import.meta.url).href;
+const binaviaAvatarUrl = new URL("../../portal/src/assets/7831b9ec4303df4fbb366388ea0a210b01e2e804.png", import.meta.url).href;
 
 interface AppShellProps {
   children: ReactNode;
@@ -77,15 +78,39 @@ const iconMap = {
   workspace: Building2,
 } as const;
 
-const demoUserProfile = {
+const fallbackUserProfile = {
   name: "Dimas Sayyid",
   email: "dimas.sayyid@injourney.id",
-  role: "Admin",
   title: "VP Human Capital Strategy",
   organization: "Direktorat Human Capital",
   company: "InJourney Holding",
   avatarUrl: dimasAvatarUrl,
 };
+
+// Keep the shell chrome persona in sync with the signed-in user shown across the
+// modules (profile, dashboard, performance) instead of a single hardcoded identity.
+const userProfilesByEmail: Record<string, typeof fallbackUserProfile> = {
+  "binavia@injourney.co.id": {
+    name: "Binavia Wardhani",
+    email: "binavia@injourney.co.id",
+    title: "HC Strategy Senior Officer",
+    organization: "Direktorat Human Capital",
+    company: "InJourney Holding",
+    avatarUrl: binaviaAvatarUrl,
+  },
+};
+
+function resolveUserProfile(email: string) {
+  return userProfilesByEmail[email] ?? { ...fallbackUserProfile, email: email || fallbackUserProfile.email };
+}
+
+function friendlyDate(date: Date) {
+  try {
+    return date.toLocaleDateString("id-ID", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
+  } catch {
+    return "";
+  }
+}
 
 function resolveIcon(iconKey: string) {
   return iconMap[iconKey as keyof typeof iconMap] ?? LayoutGrid;
@@ -126,6 +151,10 @@ export function AppShell({
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [openMenu, setOpenMenu] = useState<OpenMenu>(null);
   const [searchQuery, setSearchQuery] = useState("");
+
+  const userProfile = useMemo(() => resolveUserProfile(userEmail), [userEmail]);
+  const greetingName = userProfile.name.split(" ")[0];
+  const todayLabel = useMemo(() => friendlyDate(new Date()), []);
 
   const visiblePlatforms = useMemo(
     () => platforms.filter((platform) => platform.visibleTo.includes(userRole)).sort((left, right) => left.order - right.order),
@@ -258,7 +287,7 @@ export function AppShell({
             }}
           />
 
-          <div className={`relative flex items-center ${isSidebarCollapsed ? "justify-center px-2 py-3" : "px-4 py-4"}`}>
+          <div className={`relative flex shrink-0 items-center ${isSidebarCollapsed ? "justify-center px-2 py-3" : "px-4 py-4"}`}>
             <div
               className={`flex items-center overflow-hidden border border-white/65 bg-white/90 shadow-sm shadow-black/10 backdrop-blur-md ${
                 isSidebarCollapsed ? "size-11 justify-start rounded-2xl p-0" : "h-16 w-[196px] justify-start gap-3 rounded-[28px] px-4 py-2.5"
@@ -323,7 +352,7 @@ export function AppShell({
             ))}
           </nav>
 
-          <div className={`relative border-t border-white/10 p-3 ${isSidebarCollapsed ? "px-2" : ""}`}>
+          <div className={`relative z-10 shrink-0 border-t border-white/10 bg-primary p-3 ${isSidebarCollapsed ? "px-2" : ""}`}>
             <button
               type="button"
               onClick={() => toggleMenu("sidebarProfile")}
@@ -332,13 +361,13 @@ export function AppShell({
               }`}
             >
               <div className="relative flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-white/95 text-sm font-bold text-sidebar shadow-sm">
-                <img src={demoUserProfile.avatarUrl} alt={demoUserProfile.name} className="size-full object-cover" />
+                <img src={userProfile.avatarUrl} alt={userProfile.name} className="size-full object-cover" />
                 <span className="absolute bottom-0.5 right-0.5 size-2.5 rounded-full border border-white bg-success" />
               </div>
               {!isSidebarCollapsed ? (
                 <div className="min-w-0">
-                  <p className="truncate text-sm font-semibold text-white">{demoUserProfile.name}</p>
-                  <p className="truncate text-xs text-sidebar-foreground/70">{demoUserProfile.title}</p>
+                  <p className="truncate text-sm font-semibold text-white">{userProfile.name}</p>
+                  <p className="truncate text-xs text-sidebar-foreground/70">{userProfile.title}</p>
                 </div>
               ) : null}
             </button>
@@ -364,17 +393,17 @@ export function AppShell({
           >
             <div className="flex items-center gap-3">
               <div className="flex size-11 items-center justify-center overflow-hidden rounded-2xl bg-primary/10 text-sm font-bold text-primary">
-                <img src={demoUserProfile.avatarUrl} alt={demoUserProfile.name} className="size-full object-cover" />
+                <img src={userProfile.avatarUrl} alt={userProfile.name} className="size-full object-cover" />
               </div>
               <div className="min-w-0">
-                <p className="truncate text-sm font-semibold text-foreground">{demoUserProfile.name}</p>
-                <p className="text-xs text-muted-foreground">{demoUserProfile.title}</p>
+                <p className="truncate text-sm font-semibold text-foreground">{userProfile.name}</p>
+                <p className="text-xs text-muted-foreground">{userProfile.title}</p>
               </div>
             </div>
             <div className="mt-4 rounded-2xl bg-muted/60 p-3 text-xs leading-5 text-muted-foreground">
-              <p className="font-medium text-foreground">{demoUserProfile.organization}</p>
-              <p>{demoUserProfile.company}</p>
-              <p className="mt-1">{demoUserProfile.email}</p>
+              <p className="font-medium text-foreground">{userProfile.organization}</p>
+              <p>{userProfile.company}</p>
+              <p className="mt-1">{userProfile.email}</p>
             </div>
             <div className="mt-4 space-y-2">
               <button
@@ -400,8 +429,8 @@ export function AppShell({
           <header className="relative z-30 h-16 shrink-0 bg-primary px-4 py-3 text-primary-foreground">
             <div className="flex h-full items-center gap-3">
               <div className="hidden min-w-[180px] shrink-0 lg:block">
-                <p className="text-base font-semibold leading-5 text-white">Hello, Dimas.</p>
-                <p className="mt-0.5 text-xs leading-4 text-white/65">Selasa, 7 April 2026</p>
+                <p className="text-base font-semibold leading-5 text-white">Hello, {greetingName}.</p>
+                <p className="mt-0.5 text-xs leading-4 text-white/65">{todayLabel}</p>
               </div>
               <button
                 type="button"
@@ -540,7 +569,7 @@ export function AppShell({
           </header>
 
           <main className="min-h-0 flex-1 overflow-y-auto bg-primary">
-            <div className="relative min-h-full overflow-hidden rounded-tl-[32px] border-l border-white/20 bg-background shadow-[inset_0_1px_0_rgba(255,255,255,0.65),0_20px_60px_rgba(16,24,40,0.08)]">
+            <div className="relative min-h-full overflow-hidden rounded-tl-[32px] border-l border-white/20 bg-background text-foreground shadow-[inset_0_1px_0_rgba(255,255,255,0.65),0_20px_60px_rgba(16,24,40,0.08)]">
               {children}
             </div>
           </main>
