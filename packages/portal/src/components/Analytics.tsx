@@ -48,11 +48,11 @@ const tenureData = [
 ];
 
 const educationData = [
-  { level: 'S3/Doktor', count: 8, color: '#8B5CF6' },
-  { level: 'S2/Master', count: 52, color: '#3B82F6' },
-  { level: 'S1/Bachelor', count: 186, color: '#10B981' },
-  { level: 'D3/Diploma', count: 48, color: '#F59E0B' },
-  { level: 'SMA/SMK', count: 28, color: '#EF4444' }
+  { level: 'S3/Doktor', count: 8, color: 'var(--chart-1)' },
+  { level: 'S2/Master', count: 52, color: 'var(--chart-5)' },
+  { level: 'S1/Bachelor', count: 186, color: 'var(--chart-2)' },
+  { level: 'D3/Diploma', count: 48, color: 'var(--chart-3)' },
+  { level: 'SMA/SMK', count: 28, color: 'var(--chart-4)' }
 ];
 
 const departmentData = [
@@ -64,7 +64,7 @@ const departmentData = [
   { name: 'Sales', employees: 30 }
 ];
 
-const COLORS = ['#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#EC4899'];
+const COLORS = ['var(--chart-1)', 'var(--chart-2)', 'var(--chart-3)', 'var(--chart-4)', 'var(--chart-5)', 'var(--chart-1)'];
 
 // Dummy data untuk branch
 const BRANCH_DATA = [
@@ -604,7 +604,7 @@ export default function Analytics({ onBack }: AnalyticsProps) {
                     }}
                   />
                   <Legend />
-                  <Area type="monotone" dataKey="total" stroke="#3B82F6" fill="#3B82F6" fillOpacity={0.2} name="Total Pegawai" />
+                  <Area type="monotone" dataKey="total" stroke="var(--chart-1)" fill="var(--chart-1)" fillOpacity={0.2} name="Total Pegawai" />
                 </AreaChart>
               </ResponsiveContainer>
             </div>
@@ -626,9 +626,9 @@ export default function Analytics({ onBack }: AnalyticsProps) {
                     cx="50%"
                     cy="50%"
                     labelLine={false}
-                    label={({ level, percentage }) => `${level}: ${percentage}%`}
+                    label={({ level, percent }) => `${level}: ${((percent ?? 0) * 100).toFixed(0)}%`}
                     outerRadius={100}
-                    fill="#8884d8"
+                    fill="var(--chart-1)"
                     dataKey="count"
                   >
                     {educationData.map((entry, index) => (
@@ -669,7 +669,7 @@ export default function Analytics({ onBack }: AnalyticsProps) {
                     }}
                   />
                   <Legend />
-                  <Bar dataKey="count" fill="#10B981" name="Jumlah Pegawai" />
+                  <Bar dataKey="count" fill="var(--chart-2)" name="Jumlah Pegawai" />
                 </BarChart>
               </ResponsiveContainer>
             </div>
@@ -730,8 +730,8 @@ export default function Analytics({ onBack }: AnalyticsProps) {
                   }}
                 />
                 <Legend />
-                <Line type="monotone" dataKey="new" stroke="#10B981" strokeWidth={2} name="Pegawai Baru" />
-                <Line type="monotone" dataKey="resigned" stroke="#EF4444" strokeWidth={2} name="Resign" />
+                <Line type="monotone" dataKey="new" stroke="var(--chart-2)" strokeWidth={2} name="Pegawai Baru" />
+                <Line type="monotone" dataKey="resigned" stroke="var(--chart-4)" strokeWidth={2} name="Resign" />
               </LineChart>
             </ResponsiveContainer>
           </div>
@@ -760,7 +760,7 @@ export default function Analytics({ onBack }: AnalyticsProps) {
                   }}
                 />
                 <Legend />
-                <Bar dataKey="count" fill="#3B82F6" name="Jumlah Pegawai" />
+                <Bar dataKey="count" fill="var(--chart-1)" name="Jumlah Pegawai" />
               </BarChart>
             </ResponsiveContainer>
 
@@ -808,7 +808,7 @@ export default function Analytics({ onBack }: AnalyticsProps) {
                     labelLine={false}
                     label={({ level, count }) => `${level}: ${count}`}
                     outerRadius={120}
-                    fill="#8884d8"
+                    fill="var(--chart-1)"
                     dataKey="count"
                   >
                     {educationData.map((entry, index) => (
