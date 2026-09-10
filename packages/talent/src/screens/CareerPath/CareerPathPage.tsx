@@ -14,7 +14,6 @@ import { Layout } from '../../components/shell/Layout';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../components/ui/tabs';
 import { User, Users, Target, Building, BarChart3 } from 'lucide-react';
 import { CareerPathProvider } from '../../lib/career-path/CareerPathContext';
-import { ViewToggle } from './components/ViewToggle';
 import { IndividualAspirationView } from './IndividualAspiration/IndividualAspirationView';
 import { SupervisorAspirationView } from './SupervisorAspiration/SupervisorAspirationView';
 import { JobHolderAspirationView } from './JobHolderAspiration/JobHolderAspirationView';
@@ -34,7 +33,6 @@ export function CareerAspirationPage({ embedded = false }: { embedded?: boolean 
           eyebrow="My Talent Journey"
           title="Career Aspiration"
           description="Kelola aspirasi karir karyawan dari berbagai sumber: Individual, Supervisor, Job Holder, dan Unit untuk perencanaan karir yang lebih baik."
-          actions={<ViewToggle />}
         />
 
         <Tabs defaultValue="individual" className="w-full space-y-6">
