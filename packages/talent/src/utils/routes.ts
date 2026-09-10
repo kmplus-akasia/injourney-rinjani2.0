@@ -31,6 +31,13 @@ import { BulkAssignmentScreen } from "../screens/Admin/IDP/BulkAssignmentScreen"
 import { ReminderSettingsScreen } from "../screens/Admin/IDP/ReminderSettingsScreen";
 import { GapAnalysisReportScreen } from "../screens/Admin/IDP/GapAnalysisReportScreen";
 import { JobTenderDashboardScreen } from "../screens/Admin/JobTender/JobTenderDashboardScreen";
+import { JobTenderCreateVacancyScreen } from "../screens/Admin/JobTender/JobTenderCreateVacancyScreen";
+import { JobTenderVacancyDetailScreen } from "../screens/Admin/JobTender/JobTenderVacancyDetailScreen";
+import { OrganizationManagementPage } from "../screens/OrganizationManagement/OrganizationManagementPage";
+import { OrganizationPositionDetailPage } from "../screens/OrganizationManagement/OrganizationPositionDetailPage";
+import { CompetencyAssessmentPage } from "../screens/CompetencyAssessment/CompetencyAssessmentPage";
+import { CompetencySelfAssessmentFillPage } from "../screens/CompetencyAssessment/CompetencySelfAssessmentFillPage";
+import { CompetencyEvaluationReportPage } from "../screens/CompetencyAssessment/CompetencyEvaluationReportPage";
 import Assessment360Page from "../app/360-assessment/page";
 import FillQuestionnairePage from "../app/360-assessment/fill/[id]/page";
 import AssessmentReportPage from "../app/360-assessment/report/[id]/page";
@@ -106,7 +113,11 @@ export const router = createBrowserRouter([
   },
   {
     path: "/talent/org-management",
-    Component: () => <ComingSoon moduleName="Organization Management" title="Modul Organisasi" description="Fitur pengelolaan struktur organisasi sedang dalam pengembangan." />,
+    Component: OrganizationManagementPage,
+  },
+  {
+    path: "/talent/org-management/positions/:id",
+    Component: OrganizationPositionDetailPage,
   },
   {
     path: "/talent/idp",
@@ -191,6 +202,26 @@ export const router = createBrowserRouter([
   {
     path: "/talent/admin/job-tender",
     Component: JobTenderDashboardScreen,
+  },
+  {
+    path: "/talent/admin/job-tender/create",
+    Component: JobTenderCreateVacancyScreen,
+  },
+  {
+    path: "/talent/admin/job-tender/:id",
+    Component: JobTenderVacancyDetailScreen,
+  },
+  {
+    path: "/talent/competency-assessment",
+    Component: CompetencyAssessmentPage,
+  },
+  {
+    path: "/talent/competency-assessment/fill/:id",
+    Component: CompetencySelfAssessmentFillPage,
+  },
+  {
+    path: "/talent/competency-assessment/report/:id",
+    Component: CompetencyEvaluationReportPage,
   },
   {
     path: "/talent/360-assessment",

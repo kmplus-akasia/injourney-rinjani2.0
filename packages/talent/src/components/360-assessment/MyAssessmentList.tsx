@@ -85,7 +85,7 @@ export function MyAssessmentList() {
                   <td className="px-4 py-3 text-right">
                     {item.status === "published" && (
                       <Button asChild variant="ghost" size="icon" className="size-8 rounded-full">
-                        <Link to={`/360-assessment/report/${item.id}`} aria-label={`Lihat laporan ${item.cycle?.name}`}>
+                        <Link to={`/talent/360-assessment/report/${item.id}`} aria-label={`Lihat laporan ${item.cycle?.name}`}>
                           <ChevronRight size={16} />
                         </Link>
                       </Button>

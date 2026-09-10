@@ -34,7 +34,7 @@ export function HistoryList() {
         year: cycleYear,
         score: result.overall_score,
         max_score: result.overall_max_score,
-        link: `/360-assessment/report/${result.id}`
+        link: `/talent/360-assessment/report/${result.id}`
       });
     }
 
@@ -47,7 +47,7 @@ export function HistoryList() {
         role: "Penilai",
         year: cycleYear,
         score: null,
-        link: `/360-assessment/fill/${assignment.id}?readonly=true` // Read only view
+        link: `/talent/360-assessment/fill/${assignment.id}?readonly=true`
       });
     }
   });

@@ -56,6 +56,9 @@ Sidebar group: `My Talent Journey`
 - `/talent/360-assessment/assigned`
 - `/talent/360-assessment/fill/:id`
 - `/talent/360-assessment/report/:id`
+- `/talent/competency-assessment`
+- `/talent/competency-assessment/fill/:id`
+- `/talent/competency-assessment/report/:id`
 - `/talent/explore`
 - `/talent/explore/:id`
 - `/talent/my-applications`
@@ -74,6 +77,8 @@ Sidebar group: `Talent Management`
 Sidebar group: `Administration`
 
 - `/talent/admin/job-tender`
+- `/talent/admin/job-tender/create`
+- `/talent/admin/job-tender/:id`
 - `/talent/admin/idp`
 - `/talent/admin/idp/cycles`
 - `/talent/admin/idp/library`
@@ -90,6 +95,7 @@ Sidebar group: `Administration`
 - `/talent/360-assessment-hq/:id/monitoring`
 - `/talent/360-assessment-hq/:id/results`
 - `/talent/org-management`
+- `/talent/org-management/positions/:id`
 
 Hidden/non-sidebar route
 

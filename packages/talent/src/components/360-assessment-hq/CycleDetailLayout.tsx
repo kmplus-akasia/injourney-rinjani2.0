@@ -28,9 +28,9 @@ export function CycleDetailLayout({ children }: { children: ReactNode }) {
   };
 
   const tabs = [
-    { label: "Penetapan Assessor", path: `/360-assessment-hq/${id}/assessors`, isActive: location.pathname.includes("/assessors") },
-    { label: "Monitoring Penyelesaian", path: `/360-assessment-hq/${id}/monitoring`, isActive: location.pathname.includes("/monitoring") },
-    { label: "Hasil Penilaian", path: `/360-assessment-hq/${id}/results`, isActive: location.pathname.includes("/results") },
+    { label: "Penetapan Assessor", path: `/talent/360-assessment-hq/${id}/assessors`, isActive: location.pathname.includes("/assessors") },
+    { label: "Monitoring Penyelesaian", path: `/talent/360-assessment-hq/${id}/monitoring`, isActive: location.pathname.includes("/monitoring") },
+    { label: "Hasil Penilaian", path: `/talent/360-assessment-hq/${id}/results`, isActive: location.pathname.includes("/results") },
   ];
 
   const getStatusBadge = (status: string) => {

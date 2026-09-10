@@ -30,6 +30,13 @@ import { BulkAssignmentScreen } from "@talent/screens/Admin/IDP/BulkAssignmentSc
 import { ReminderSettingsScreen } from "@talent/screens/Admin/IDP/ReminderSettingsScreen";
 import { GapAnalysisReportScreen } from "@talent/screens/Admin/IDP/GapAnalysisReportScreen";
 import { JobTenderDashboardScreen } from "@talent/screens/Admin/JobTender/JobTenderDashboardScreen";
+import { JobTenderCreateVacancyScreen } from "@talent/screens/Admin/JobTender/JobTenderCreateVacancyScreen";
+import { JobTenderVacancyDetailScreen } from "@talent/screens/Admin/JobTender/JobTenderVacancyDetailScreen";
+import { OrganizationManagementPage } from "@talent/screens/OrganizationManagement/OrganizationManagementPage";
+import { OrganizationPositionDetailPage } from "@talent/screens/OrganizationManagement/OrganizationPositionDetailPage";
+import { CompetencyAssessmentPage } from "@talent/screens/CompetencyAssessment/CompetencyAssessmentPage";
+import { CompetencySelfAssessmentFillPage } from "@talent/screens/CompetencyAssessment/CompetencySelfAssessmentFillPage";
+import { CompetencyEvaluationReportPage } from "@talent/screens/CompetencyAssessment/CompetencyEvaluationReportPage";
 import Assessment360Page from "@talent/app/360-assessment/page";
 import FillQuestionnairePage from "@talent/app/360-assessment/fill/[id]/page";
 import AssessmentReportPage from "@talent/app/360-assessment/report/[id]/page";
@@ -74,6 +81,13 @@ export const talentPages = {
   ReminderSettingsScreen,
   GapAnalysisReportScreen,
   JobTenderDashboardScreen,
+  JobTenderCreateVacancyScreen,
+  JobTenderVacancyDetailScreen,
+  OrganizationManagementPage,
+  OrganizationPositionDetailPage,
+  CompetencyAssessmentPage,
+  CompetencySelfAssessmentFillPage,
+  CompetencyEvaluationReportPage,
   Assessment360Page,
   FillQuestionnairePage,
   AssessmentReportPage,

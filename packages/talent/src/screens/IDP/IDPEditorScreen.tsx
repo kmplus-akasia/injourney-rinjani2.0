@@ -1,5 +1,5 @@
 import { useState, useCallback } from "react";
-import { Link, useNavigate } from "react-router";
+import { Link, useNavigate, useSearchParams } from "react-router";
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { 
@@ -46,6 +46,10 @@ import { DraggableActivityCard } from "@/components/idp/DraggableActivityCard";
 
 export function IDPEditorScreen() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const gapSource = searchParams.get("source");
+  const gapReason = searchParams.get("reason");
+  const gapCompetency = searchParams.get("competency");
   const activeCycle = mockIDPCycles.find(c => c.status === 'active');
   const currentEmployee = mockEmployees[0];
   const currentIDPRecord = mockIDPRecords.find(
@@ -190,6 +194,19 @@ export function IDPEditorScreen() {
               </div>
             </div>
           </div>
+
+          {gapSource || gapCompetency ? (
+            <div className="max-w-5xl mx-auto px-6 pt-4">
+              <div className="rounded-xl border border-primary/30 bg-primary/5 p-4 text-sm" role="status">
+                <p className="font-medium text-foreground">System-generated IDP from competency gap</p>
+                <p className="text-muted-foreground">
+                  Source: {gapSource === "system-generated" ? "System-generated" : gapSource ?? "—"}.
+                  Reason tag: {gapReason === "gap-kompetensi" ? "Gap Kompetensi" : gapReason ?? "—"}.
+                  {gapCompetency ? ` Focus competency: ${gapCompetency}.` : ""}
+                </p>
+              </div>
+            </div>
+          ) : null}
 
           <div className="max-w-5xl mx-auto p-6 grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
             

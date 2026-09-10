@@ -1,23 +1,34 @@
 import { useState, useEffect, useMemo } from "react";
-import { useParams, Link, useNavigate } from "react-router";
+import { useParams, Link, useNavigate, useSearchParams } from "react-router";
 import { Layout as AppShell } from "../../../../components/shell/Layout";
-import { 
-  assessorAssignments, 
-  assessmentCycles, 
-  assessmentInstruments, 
-  instrumentQuestions, 
-  assessmentSubmissions,
-  employees
+import {
+  assessorAssignments,
+  assessmentCycles,
+  assessmentInstruments,
+  instrumentQuestions,
+  employees,
+  completeAssignment,
 } from "../../../../lib/360-assessment/data";
-import { ChevronLeft, CheckCircle2, Save, AlertCircle } from "lucide-react";
+import { ChevronLeft, CheckCircle2, Save } from "lucide-react";
 import { toast } from "sonner@2.0.3";
 import { cn } from "../../../../components/ui/utils";
+import {
+  Button,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@rinjani/shared-ui";
 
 export default function FillQuestionnairePage() {
   const params = useParams();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [confirmOpen, setConfirmOpen] = useState(false);
   const [answers, setAnswers] = useState<Record<string, { score: number | null, comment: string }>>({});
 
   // 1. Load Data
@@ -36,10 +47,6 @@ export default function FillQuestionnairePage() {
   const questions = useMemo(() => 
     instrument ? instrumentQuestions.filter(q => q.instrument_id === instrument.id).sort((a, b) => a.question_order - b.question_order) : []
   , [instrument]);
-
-  const existingSubmission = useMemo(() => 
-    assignment ? assessmentSubmissions.find(s => s.assignment_id === assignment.id) : null
-  , [assignment]);
 
   const assessee = useMemo(() => 
     assignment ? employees.find(e => e.id === assignment.assessee_id) : null
@@ -72,8 +79,19 @@ export default function FillQuestionnairePage() {
     }
   }, [questions]);
 
-  // Read-only check
-  const isReadOnly = assignment?.status === 'completed' || cycle?.status === 'archived';
+  const isReadOnly =
+    assignment?.status === "completed" ||
+    cycle?.status === "archived" ||
+    searchParams.get("readonly") === "true";
+
+  useEffect(() => {
+    if (isReadOnly) return undefined;
+    const timer = window.setInterval(() => {
+      setIsSaving(true);
+      window.setTimeout(() => setIsSaving(false), 800);
+    }, 30000);
+    return () => window.clearInterval(timer);
+  }, [answers, isReadOnly]);
 
   if (!assignment || !cycle || !instrument) {
     return (
@@ -113,20 +131,27 @@ export default function FillQuestionnairePage() {
     }, 1000);
   };
 
+  const persistSubmit = () => {
+    if (answeredCount < totalQuestions) {
+      toast.error("Mohon lengkapi semua pertanyaan sebelum submit.");
+      return;
+    }
+    setIsSubmitting(true);
+    if (assignment) completeAssignment(assignment.id);
+    window.setTimeout(() => {
+      setIsSubmitting(false);
+      setConfirmOpen(false);
+      toast.success("Penilaian berhasil dikirim!");
+      navigate("/talent/360-assessment");
+    }, 800);
+  };
+
   const handleSubmit = () => {
     if (answeredCount < totalQuestions) {
       toast.error("Mohon lengkapi semua pertanyaan sebelum submit.");
       return;
     }
-
-    if (confirm("Apakah Anda yakin ingin mengirim penilaian ini? Jawaban tidak dapat diubah setelah dikirim.")) {
-      setIsSubmitting(true);
-      setTimeout(() => {
-        setIsSubmitting(false);
-        toast.success("Penilaian berhasil dikirim!");
-        navigate("/talent/360-assessment");
-      }, 1500);
-    }
+    setConfirmOpen(true);
   };
 
   return (
@@ -256,17 +281,36 @@ export default function FillQuestionnairePage() {
                    Penilaian Selesai
                  </div>
                ) : (
-                 <button
+                 <Button
+                   type="button"
                    onClick={handleSubmit}
                    disabled={answeredCount < totalQuestions || isSubmitting}
-                   className="px-6 py-2 text-sm font-bold text-primary-foreground bg-primary rounded-md shadow-sm hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center gap-2"
                  >
                    {isSubmitting ? "Mengirim..." : "Submit Penilaian"}
-                 </button>
+                 </Button>
                )}
              </div>
           </div>
         </div>
+
+        <Dialog open={confirmOpen} onOpenChange={setConfirmOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Kirim penilaian ini?</DialogTitle>
+              <DialogDescription>
+                Jawaban tidak dapat diubah setelah dikirim. Pastikan seluruh pertanyaan sudah diisi.
+              </DialogDescription>
+            </DialogHeader>
+            <DialogFooter>
+              <Button type="button" variant="outline" onClick={() => setConfirmOpen(false)}>
+                Lanjut mengisi
+              </Button>
+              <Button type="button" onClick={persistSubmit} disabled={isSubmitting}>
+                {isSubmitting ? "Mengirim..." : "Konfirmasi kirim"}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
 
         {/* Sidebar Nav (Desktop) */}
         <div className="hidden xl:block w-64 sticky top-[80px] self-start max-h-[calc(100vh-100px)] overflow-y-auto pr-2 custom-scrollbar">
