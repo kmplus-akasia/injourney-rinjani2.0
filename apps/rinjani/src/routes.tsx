@@ -303,7 +303,7 @@ export const router = createHashRouter([
                       { path: "admin/idp/bulk-assign", element: <AdminOnly><talentPages.BulkAssignmentScreen /></AdminOnly> },
                       { path: "admin/idp/reminders", element: <AdminOnly><talentPages.ReminderSettingsScreen /></AdminOnly> },
                       { path: "admin/idp/gap-report", element: <AdminOnly><talentPages.GapAnalysisReportScreen /></AdminOnly> },
-                      { path: "admin/idp/approvals", element: <AdminOnly><talentPages.ComingSoon moduleName="IDP Admin" title="Persetujuan IDP" layout="admin" /></AdminOnly> },
+                      { path: "admin/idp/approvals", element: <AdminOnly><talentPages.ApprovalsScreen /></AdminOnly> },
                       { path: "admin/idp/reports", element: <AdminOnly><talentPages.ComingSoon moduleName="IDP Admin" title="Laporan IDP" layout="admin" /></AdminOnly> },
                       { path: "admin/job-tender", element: <AdminOnly><talentPages.JobTenderDashboardScreen /></AdminOnly> },
                       { path: "admin/job-tender/create", element: <AdminOnly><talentPages.JobTenderCreateVacancyScreen /></AdminOnly> },

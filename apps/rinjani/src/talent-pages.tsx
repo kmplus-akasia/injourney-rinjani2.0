@@ -29,6 +29,7 @@ import { ReasonTagManagementScreen } from "@talent/screens/Admin/IDP/ReasonTagMa
 import { BulkAssignmentScreen } from "@talent/screens/Admin/IDP/BulkAssignmentScreen";
 import { ReminderSettingsScreen } from "@talent/screens/Admin/IDP/ReminderSettingsScreen";
 import { GapAnalysisReportScreen } from "@talent/screens/Admin/IDP/GapAnalysisReportScreen";
+import { ApprovalsScreen } from "@talent/screens/Admin/IDP/ApprovalsScreen";
 import { JobTenderDashboardScreen } from "@talent/screens/Admin/JobTender/JobTenderDashboardScreen";
 import { JobTenderCreateVacancyScreen } from "@talent/screens/Admin/JobTender/JobTenderCreateVacancyScreen";
 import { JobTenderVacancyDetailScreen } from "@talent/screens/Admin/JobTender/JobTenderVacancyDetailScreen";
@@ -80,6 +81,7 @@ export const talentPages = {
   BulkAssignmentScreen,
   ReminderSettingsScreen,
   GapAnalysisReportScreen,
+  ApprovalsScreen,
   JobTenderDashboardScreen,
   JobTenderCreateVacancyScreen,
   JobTenderVacancyDetailScreen,

@@ -30,6 +30,7 @@ import { ReasonTagManagementScreen } from "../screens/Admin/IDP/ReasonTagManagem
 import { BulkAssignmentScreen } from "../screens/Admin/IDP/BulkAssignmentScreen";
 import { ReminderSettingsScreen } from "../screens/Admin/IDP/ReminderSettingsScreen";
 import { GapAnalysisReportScreen } from "../screens/Admin/IDP/GapAnalysisReportScreen";
+import { ApprovalsScreen } from "../screens/Admin/IDP/ApprovalsScreen";
 import { JobTenderDashboardScreen } from "../screens/Admin/JobTender/JobTenderDashboardScreen";
 import { JobTenderCreateVacancyScreen } from "../screens/Admin/JobTender/JobTenderCreateVacancyScreen";
 import { JobTenderVacancyDetailScreen } from "../screens/Admin/JobTender/JobTenderVacancyDetailScreen";
@@ -193,7 +194,7 @@ export const router = createBrowserRouter([
   },
   {
     path: "/talent/admin/idp/approvals",
-    Component: () => <ComingSoon moduleName="IDP Admin" title="Persetujuan IDP" layout="admin" />,
+    Component: ApprovalsScreen,
   },
   {
     path: "/talent/admin/idp/reports",
