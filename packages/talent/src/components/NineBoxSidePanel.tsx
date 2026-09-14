@@ -5,13 +5,14 @@ import { Checkbox } from "./ui/checkbox";
 import { Avatar, AvatarImage, AvatarFallback } from "./ui/avatar";
 import { 
   ArrowDown, 
-  Trash2, 
   Edit2, 
   ArrowLeft, 
   ArrowRight,
   Filter,
   Download,
   Search,
+  History,
+  Star,
 } from "lucide-react";
 import { useState } from "react";
 import { Input } from "./ui/input";
@@ -38,6 +39,14 @@ export interface Employee {
     overriddenBy: string;
     overriddenDate: string;
   };
+  /** Separate from High Potential cluster (BR-TC-007). */
+  isTopTalent?: boolean;
+  priorPeriod?: {
+    period: string;
+    cell: string;
+    clusterName: string;
+  };
+  onHistoryClick?: () => void;
 }
 
 interface NineBoxSidePanelProps {
@@ -78,7 +87,7 @@ export function NineBoxSidePanel({
           <div className="flex items-start justify-between">
             <div className="flex items-center gap-4">
               <div className={`w-12 h-12 rounded-lg ${boxColor} flex items-center justify-center shadow-sm shrink-0`}>
-                <span className="text-2xl text-white">⚡</span>
+                <span className="text-sm font-bold text-white">9B</span>
               </div>
               <div className="flex flex-col gap-1">
                 <SheetTitle className="text-xl font-semibold text-foreground">{boxName}</SheetTitle>
@@ -149,10 +158,11 @@ export function NineBoxSidePanel({
                         Status <ArrowDown className="w-3 h-3" />
                       </div>
                     </th>
+                    <th className="h-[44px] px-6 text-left text-xs font-medium text-muted-foreground">Top Talent</th>
                     <th className="h-[44px] px-6 text-left text-xs font-medium text-muted-foreground">Role</th>
                     <th className="h-[44px] px-6 text-left text-xs font-medium text-muted-foreground">Email address</th>
                     <th className="h-[44px] px-6 text-left text-xs font-medium text-muted-foreground">Teams</th>
-                    <th className="h-[44px] px-6 text-left w-[100px]"></th>
+                    <th className="h-[44px] px-6 text-left w-[120px]"></th>
                   </tr>
                 </thead>
                 <tbody>
@@ -193,6 +203,16 @@ export function NineBoxSidePanel({
                           )}
                         </td>
                         <td className="px-6">
+                          {employee.isTopTalent ? (
+                            <Badge className="bg-amber-50 text-amber-800 border-amber-200 gap-1 rounded-full px-2.5 py-0.5 font-medium flex w-fit items-center shadow-none">
+                              <Star className="w-3 h-3" />
+                              Top Talent
+                            </Badge>
+                          ) : (
+                            <span className="text-sm text-muted-foreground">—</span>
+                          )}
+                        </td>
+                        <td className="px-6">
                           <span className="text-sm text-muted-foreground">{employee.position}</span>
                         </td>
                         <td className="px-6">
@@ -203,18 +223,21 @@ export function NineBoxSidePanel({
                             <Badge variant="outline" className="text-muted-foreground border-border bg-background font-normal">
                               {employee.department}
                             </Badge>
-                            {/* Fake additional tags to match design */}
-                            <Badge variant="outline" className="text-muted-foreground border-border bg-background font-normal">
-                              +2
-                            </Badge>
                           </div>
                         </td>
                         <td className="px-6 text-right">
-                          <div className="flex items-center justify-end gap-2">
-                             <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-foreground">
-                               <Trash2 className="w-4 h-4" />
+                          <div className="flex items-center justify-end gap-1">
+                             <Button
+                               variant="ghost"
+                               size="icon"
+                               className="h-8 w-8 text-muted-foreground hover:text-foreground"
+                               title="Movement history"
+                               onClick={() => employee.onHistoryClick?.()}
+                               disabled={!employee.onHistoryClick}
+                             >
+                               <History className="w-4 h-4" />
                              </Button>
-                             <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-foreground" onClick={() => onCalibrateClick?.(employee)}>
+                             <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-foreground" title="Calibrate" onClick={() => onCalibrateClick?.(employee)}>
                                <Edit2 className="w-4 h-4" />
                              </Button>
                           </div>
@@ -223,7 +246,7 @@ export function NineBoxSidePanel({
                     ))
                   ) : (
                     <tr>
-                      <td colSpan={7} className="px-6 py-12 text-center text-muted-foreground">
+                      <td colSpan={8} className="px-6 py-12 text-center text-muted-foreground">
                         No employees found in this category.
                       </td>
                     </tr>

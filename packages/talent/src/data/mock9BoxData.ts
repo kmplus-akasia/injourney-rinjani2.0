@@ -1,5 +1,10 @@
 // Mock 9-Box Data Generator based on /guidelines/Mock9BoxesData.md
 
+import type { NineBoxCellId } from "../lib/talent/nineBoxClusters";
+import { getClusterIdFromScores } from "../lib/talent/nineBoxClusters";
+
+export type DataGapField = "performance" | "potential";
+
 export interface NineBoxEmployee {
   id: string;
   nik: string;
@@ -9,7 +14,7 @@ export interface NineBoxEmployee {
   department: string;
   performanceScore: number;
   capacityScore: number;
-  cluster: string;
+  cluster: NineBoxCellId | "";
   isOverridden: boolean;
   overrideInfo?: {
     originalBox: string;
@@ -17,6 +22,155 @@ export interface NineBoxEmployee {
     overriddenBy: string;
     overriddenDate: string;
   };
+  /** Top Talent is a separate designation from High Potential (BR-TC-007). */
+  isTopTalent?: boolean;
+  /** Missing inputs that block a clean classification (UC-TC-01). */
+  dataGaps?: DataGapField[];
+  /** Prior-period cell for movement history (BR-TC-010). */
+  priorPeriod?: {
+    period: string;
+    cluster: NineBoxCellId;
+  };
+}
+
+export type CalibrationStatus = "Draft" | "Calibrated" | "Published";
+
+export const CLASSIFICATION_PERIODS = [
+  { id: "2025", label: "2025" },
+  { id: "2024", label: "2024" },
+] as const;
+
+export const JOB_LEVELS = [
+  { id: "bod", name: "BOD (Board of Directors)" },
+  { id: "bod-1", name: "BOD-1" },
+  { id: "bod-2", name: "BOD-2" },
+  { id: "kj-10-11", name: "KJ 10-11" },
+  { id: "kj-12-13", name: "Pratama B (KJ 12-13)" },
+  { id: "kj-14-15", name: "KJ 14-15" },
+  { id: "kj-16-17", name: "KJ 16-17" },
+] as const;
+
+export const COMPANIES = [
+  { id: "injourney-holding", name: "InJourney Holding" },
+  { id: "pt-api", name: "PT Angkasa Pura Indonesia" },
+  { id: "pt-ias", name: "PT Integrasi Aviasi Solusi" },
+  { id: "pt-twc", name: "PT Taman Wisata Candi" },
+  { id: "pt-hin", name: "PT Hotel Indonesia Natour" },
+  { id: "pt-sarinah", name: "PT Sarinah" },
+] as const;
+
+/** Deterministic hash — stable across remounts (no Math.random). */
+function hashSeed(input: string): number {
+  let h = 2166136261;
+  for (let i = 0; i < input.length; i++) {
+    h ^= input.charCodeAt(i);
+    h = Math.imul(h, 16777619);
+  }
+  return h >>> 0;
+}
+
+function pick<T>(seed: number, items: readonly T[]): T {
+  return items[seed % items.length];
+}
+
+const FIRST_NAMES = [
+  "Andi", "Budi", "Citra", "Dewi", "Eko", "Fajar", "Gita", "Hadi",
+  "Indra", "Joko", "Kartika", "Lina", "Maya", "Nina", "Oscar", "Putri",
+] as const;
+
+const LAST_NAMES = [
+  "Wijaya", "Santoso", "Pratama", "Kusuma", "Halim", "Sari", "Nugroho", "Putra",
+] as const;
+
+const DEPARTMENTS = ["HR", "Finance", "Operations", "IT", "Marketing", "Strategy"] as const;
+
+const POSITIONS = ["Manager", "Senior Manager", "Specialist", "Analyst", "GM", "VP"] as const;
+
+const CELL_CYCLE: NineBoxCellId[] = [
+  "h-h", "h-m", "h-l", "m-h", "m-m", "m-l", "l-h", "l-m", "l-l",
+];
+
+const SCORE_FOR_CELL: Record<NineBoxCellId, { performance: number; capacity: number }> = {
+  "h-h": { performance: 110, capacity: 90 },
+  "h-m": { performance: 105, capacity: 70 },
+  "h-l": { performance: 102, capacity: 50 },
+  "m-h": { performance: 90, capacity: 88 },
+  "m-m": { performance: 88, capacity: 70 },
+  "m-l": { performance: 85, capacity: 45 },
+  "l-h": { performance: 70, capacity: 85 },
+  "l-m": { performance: 65, capacity: 70 },
+  "l-l": { performance: 55, capacity: 40 },
+};
+
+function buildDeterministicRoster(
+  companyId: string,
+  level: string,
+  companyName: string,
+  count: number,
+): NineBoxEmployee[] {
+  const base = hashSeed(`${companyId}:${level}`);
+  const employees: NineBoxEmployee[] = [];
+
+  for (let i = 0; i < count; i++) {
+    const seed = hashSeed(`${companyId}:${level}:${i}`);
+    const cell = CELL_CYCLE[(base + i) % CELL_CYCLE.length];
+    const scores = SCORE_FOR_CELL[cell];
+    const first = pick(seed, FIRST_NAMES);
+    const last = pick(seed >>> 8, LAST_NAMES);
+    const isGap = i === count - 1 || i === count - 2;
+    const gaps: DataGapField[] | undefined = isGap
+      ? i === count - 1
+        ? ["performance"]
+        : ["potential"]
+      : undefined;
+
+    employees.push({
+      id: `${companyId}-${level}-${String(i + 1).padStart(3, "0")}`,
+      nik: `${companyId.toUpperCase().replace(/-/g, "")}${10000 + i}`,
+      name: `${first} ${last}`,
+      position: pick(seed >>> 4, POSITIONS),
+      company: companyName,
+      department: pick(seed >>> 12, DEPARTMENTS),
+      performanceScore: gaps?.includes("performance") ? 0 : scores.performance + (seed % 5),
+      capacityScore: gaps?.includes("potential") ? 0 : scores.capacity + (seed % 4),
+      cluster: gaps ? "" : cell,
+      isOverridden: false,
+      isTopTalent: !gaps && cell === "h-h" && i % 3 === 0,
+      dataGaps: gaps,
+      priorPeriod: gaps
+        ? undefined
+        : {
+            period: "2024",
+            cluster: CELL_CYCLE[(CELL_CYCLE.indexOf(cell) + 3) % CELL_CYCLE.length],
+          },
+    });
+  }
+
+  return employees;
+}
+
+function enrichCanonical(employees: NineBoxEmployee[]): NineBoxEmployee[] {
+  return employees.map((emp, index) => {
+    if (emp.dataGaps?.length) {
+      return {
+        ...emp,
+        cluster: "",
+        isTopTalent: false,
+        priorPeriod: emp.priorPeriod,
+      };
+    }
+
+    const cell = (emp.cluster || getClusterIdFromScores(emp.performanceScore, emp.capacityScore)) as NineBoxCellId;
+    return {
+      ...emp,
+      cluster: cell,
+      isTopTalent: emp.isTopTalent ?? (cell === "h-h" && index % 4 === 0),
+      priorPeriod: emp.priorPeriod ?? {
+        period: "2024",
+        cluster: CELL_CYCLE[(CELL_CYCLE.indexOf(cell) + 2 + (index % 3)) % CELL_CYCLE.length],
+      },
+    };
+  });
 }
 
 // Score ranges based on guidelines
@@ -650,43 +804,122 @@ export const INJOURNEY_BOD1_DATA: NineBoxEmployee[] = [
     cluster: "h-l",
     isOverridden: false,
   },
+  // Data-gap samples (UC-TC-01) — excluded from matrix cells until inputs complete
+  {
+    id: "api-bod2-gap-001",
+    nik: "API10991",
+    name: "Yoga Prasetya",
+    position: "Senior Manager Procurement",
+    company: "PT Angkasa Pura Indonesia",
+    department: "Procurement",
+    performanceScore: 0,
+    capacityScore: 72,
+    cluster: "",
+    isOverridden: false,
+    dataGaps: ["performance"],
+  },
+  {
+    id: "api-bod2-gap-002",
+    nik: "API10992",
+    name: "Nadia Rahayu",
+    position: "Manager Corporate Communications",
+    company: "PT Angkasa Pura Indonesia",
+    department: "Communications",
+    performanceScore: 95,
+    capacityScore: 0,
+    cluster: "",
+    isOverridden: false,
+    dataGaps: ["potential"],
+  },
 ];
 
-// Get employees by level and company
-export function getEmployeesByLevel(level: string, company: string): NineBoxEmployee[] {
+const COMPANY_NAME: Record<string, string> = {
+  "injourney-holding": "InJourney Holding",
+  "pt-api": "PT Angkasa Pura Indonesia",
+  "pt-ias": "PT Integrasi Aviasi Solusi",
+  "pt-twc": "PT Taman Wisata Candi",
+  "pt-hin": "PT Hotel Indonesia Natour",
+  "pt-sarinah": "PT Sarinah",
+  // Legacy alias used by BOD / BOD-1 canonical datasets
+  "injourney-group": "InJourney Holding",
+};
+
+const ROSTER_SIZE: Record<string, number> = {
+  bod: 8,
+  "bod-1": 12,
+  "bod-2": 18,
+  "kj-10-11": 16,
+  "kj-12-13": 14,
+  "kj-14-15": 12,
+  "kj-16-17": 10,
+};
+
+/** Period → calibration status for demo cohorts (BR-TC-009). */
+export function getCalibrationStatus(period: string, company: string, level: string): CalibrationStatus {
+  if (period === "2024") return "Published";
+  if (company === "pt-api" && level === "bod-2") return "Draft";
+  if (company === "injourney-holding" || company === "injourney-group") return "Calibrated";
+  return "Draft";
+}
+
+// Get employees by level and company — always a stable roster (never Math.random).
+export function getEmployeesByLevel(level: string, company: string, period = "2025"): NineBoxEmployee[] {
+  let base: NineBoxEmployee[];
+
   if (level === "bod-2" && company === "pt-api") {
-    return PT_API_BOD2_DATA;
-  } else if (level === "bod" && company === "injourney-group") {
-    return INJOURNEY_BOD_DATA;
-  } else if (level === "bod-1" && company === "injourney-group") {
-    return INJOURNEY_BOD1_DATA;
+    base = enrichCanonical(PT_API_BOD2_DATA);
+  } else if (level === "bod" && (company === "injourney-holding" || company === "injourney-group")) {
+    base = enrichCanonical(INJOURNEY_BOD_DATA);
+  } else if (level === "bod-1" && (company === "injourney-holding" || company === "injourney-group")) {
+    base = enrichCanonical(INJOURNEY_BOD1_DATA);
+  } else {
+    const companyName = COMPANY_NAME[company] ?? company;
+    const size = ROSTER_SIZE[level] ?? 12;
+    base = buildDeterministicRoster(company, level, companyName, size);
   }
-  
-  // Return empty array for other combinations (can be expanded)
-  return [];
+
+  // Prior period view: shift each classified employee to their priorPeriod cell
+  if (period === "2024") {
+    return base.map((emp) => {
+      if (!emp.priorPeriod || emp.dataGaps?.length) return emp;
+      const scores = SCORE_FOR_CELL[emp.priorPeriod.cluster];
+      return {
+        ...emp,
+        cluster: emp.priorPeriod.cluster,
+        performanceScore: scores.performance,
+        capacityScore: scores.capacity,
+        isOverridden: false,
+        overrideInfo: undefined,
+      };
+    });
+  }
+
+  return base;
 }
 
 // Get cluster distribution stats
 export function getClusterStats(employees: NineBoxEmployee[]) {
-  const total = employees.length;
+  const classified = employees.filter((e) => e.cluster);
+  const total = classified.length;
   const clusters = {
-    "h-h": employees.filter(e => e.cluster === "h-h").length,
-    "h-m": employees.filter(e => e.cluster === "h-m").length,
-    "h-l": employees.filter(e => e.cluster === "h-l").length,
-    "m-h": employees.filter(e => e.cluster === "m-h").length,
-    "m-m": employees.filter(e => e.cluster === "m-m").length,
-    "m-l": employees.filter(e => e.cluster === "m-l").length,
-    "l-h": employees.filter(e => e.cluster === "l-h").length,
-    "l-m": employees.filter(e => e.cluster === "l-m").length,
-    "l-l": employees.filter(e => e.cluster === "l-l").length,
+    "h-h": classified.filter((e) => e.cluster === "h-h").length,
+    "h-m": classified.filter((e) => e.cluster === "h-m").length,
+    "h-l": classified.filter((e) => e.cluster === "h-l").length,
+    "m-h": classified.filter((e) => e.cluster === "m-h").length,
+    "m-m": classified.filter((e) => e.cluster === "m-m").length,
+    "m-l": classified.filter((e) => e.cluster === "m-l").length,
+    "l-h": classified.filter((e) => e.cluster === "l-h").length,
+    "l-m": classified.filter((e) => e.cluster === "l-m").length,
+    "l-l": classified.filter((e) => e.cluster === "l-l").length,
   };
 
-  const overrideCount = employees.filter(e => e.isOverridden).length;
+  const overrideCount = employees.filter((e) => e.isOverridden).length;
 
   return {
     total,
     clusters,
     overrideCount,
-    overrideRate: ((overrideCount / total) * 100).toFixed(1),
+    overrideRate: total === 0 ? "0.0" : ((overrideCount / total) * 100).toFixed(1),
+    gapCount: employees.filter((e) => (e.dataGaps?.length ?? 0) > 0).length,
   };
 }

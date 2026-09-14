@@ -70,6 +70,7 @@ import {
   type TalentCluster,
   type Urgency,
 } from "../data/mockMyTeamData";
+import { NINE_BOX_CELLS, type NineBoxCellId } from "../lib/talent/nineBoxClusters";
 
 type SupervisorTab = "dashboard" | "team-profile" | "team-insights";
 type RosterSort = "name" | "grade" | "eqs" | "cluster";
@@ -85,6 +86,18 @@ const actionCategoryOrder: MyTeamActionCategory[] = [
   "team_members_flagged",
 ];
 
+const CELL_TONE: Record<NineBoxCellId, string> = {
+  "h-l": "border-blue-600 bg-blue-500 text-white",
+  "h-m": "border-emerald-600 bg-emerald-500 text-white",
+  "h-h": "border-emerald-700 bg-emerald-600 text-white",
+  "m-l": "border-blue-600 bg-blue-500 text-white",
+  "m-m": "border-emerald-600 bg-emerald-500 text-white",
+  "m-h": "border-emerald-600 bg-emerald-500 text-white",
+  "l-l": "border-red-600 bg-red-500 text-white",
+  "l-m": "border-teal-600 bg-teal-500 text-white",
+  "l-h": "border-teal-600 bg-teal-500 text-white",
+};
+
 const nineBoxMatrix: Array<{
   id: Exclude<NineBoxCell, null>;
   label: string;
@@ -92,17 +105,14 @@ const nineBoxMatrix: Array<{
   performance: "High" | "Medium" | "Low";
   capacity: "Low" | "Medium" | "High";
   toneClasses: string;
-}> = [
-  { id: "h-l", label: "Sleeping Tiger", cluster: "9box_sleeping_tiger", performance: "High", capacity: "Low", toneClasses: "border-teal-600 bg-teal-500 text-white" },
-  { id: "h-m", label: "Promotable", cluster: "9box_promotable", performance: "High", capacity: "Medium", toneClasses: "border-emerald-600 bg-emerald-500 text-white" },
-  { id: "h-h", label: "High Potential", cluster: "9box_high_potential", performance: "High", capacity: "High", toneClasses: "border-emerald-700 bg-emerald-600 text-white" },
-  { id: "m-l", label: "Sleeping Tiger", cluster: "9box_sleeping_tiger", performance: "Medium", capacity: "Low", toneClasses: "border-teal-600 bg-teal-500 text-white" },
-  { id: "m-m", label: "Solid Contributor", cluster: "9box_solid_contributor", performance: "Medium", capacity: "Medium", toneClasses: "border-blue-600 bg-blue-500 text-white" },
-  { id: "m-h", label: "Promotable", cluster: "9box_promotable", performance: "Medium", capacity: "High", toneClasses: "border-emerald-600 bg-emerald-500 text-white" },
-  { id: "l-l", label: "Unfit", cluster: "9box_unfit", performance: "Low", capacity: "Low", toneClasses: "border-red-600 bg-red-500 text-white" },
-  { id: "l-m", label: "Solid Contributor", cluster: "9box_solid_contributor", performance: "Low", capacity: "Medium", toneClasses: "border-blue-500 bg-blue-400 text-white" },
-  { id: "l-h", label: "Solid Contributor", cluster: "9box_solid_contributor", performance: "Low", capacity: "High", toneClasses: "border-blue-500 bg-blue-400 text-white" },
-];
+}> = NINE_BOX_CELLS.map((cell) => ({
+  id: cell.id,
+  label: cell.name,
+  cluster: cell.talentClusterSlug,
+  performance: cell.performance,
+  capacity: cell.potential,
+  toneClasses: CELL_TONE[cell.id],
+}));
 
 function isValidTab(value: string | null): value is SupervisorTab {
   return value === "dashboard" || value === "team-profile" || value === "team-insights";

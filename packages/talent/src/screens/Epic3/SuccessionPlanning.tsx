@@ -218,12 +218,12 @@ export function SuccessionPlanning() {
       const map: Record<string, string> = {
         "h-h": "High Potential",
         "h-m": "Promotable",
-        "h-l": "Sleeping Tiger",
+        "h-l": "Solid Contributor",
         "m-h": "Promotable",
-        "m-m": "Solid Contributor",
-        "m-l": "Sleeping Tiger",
-        "l-h": "Solid Contributor",
-        "l-m": "Solid Contributor",
+        "m-m": "Promotable",
+        "m-l": "Solid Contributor",
+        "l-h": "Sleeping Tiger",
+        "l-m": "Sleeping Tiger",
         "l-l": "Unfit"
       };
       return map[id] || "Unclassified";
