@@ -50,32 +50,30 @@ export function PositionDetail({ position, candidates, onBack, onSubmit, onCompa
   const isValid = !!primary && !!secondary && !!tertiary;
 
   return (
-    <div className="flex flex-col h-full bg-neutral-50">
-      {/* Header */}
-      <div className="bg-white border-b border-neutral-200 px-6 py-4 flex items-center justify-between sticky top-0 z-20">
+    <div className="flex min-h-full flex-col bg-background">
+      <div className="sticky top-0 z-20 flex items-center justify-between rounded-[24px] border border-border bg-card px-4 py-4 shadow-sm sm:px-6">
         <div className="flex items-center gap-4">
-          <Button variant="ghost" size="icon" onClick={onBack} className="rounded-full hover:bg-slate-100">
-            <ArrowLeft className="w-5 h-5 text-slate-600" />
+          <Button variant="ghost" size="icon" onClick={onBack} className="rounded-full hover:bg-muted" aria-label="Back to succession board">
+            <ArrowLeft className="w-5 h-5 text-muted-foreground" />
           </Button>
           <div>
             <div className="flex items-center gap-3">
-              <h1 className="text-xl font-bold text-slate-800">{position.title}</h1>
+              <h1 className="text-xl font-bold text-foreground">{position.title}</h1>
               <Badge variant="outline" className={cn(
                 "border-0",
-                position.vacancyStatus === "vacant" ? "bg-red-100 text-red-700" : "bg-amber-100 text-amber-700"
+                position.vacancyStatus === "vacant" ? "bg-destructive/10 text-destructive" : "bg-warning-muted text-warning"
               )}>
                 {position.vacancyStatus === "vacant" ? "Vacant" : "In Progress"}
               </Badge>
             </div>
-            <p className="text-sm text-slate-500 mt-0.5">{position.division} • {position.grade}</p>
+            <p className="mt-0.5 text-sm text-muted-foreground">{position.division} • {position.grade}</p>
           </div>
         </div>
       </div>
 
-      <div className="flex-1 flex overflow-hidden">
-        {/* Main Content */}
-        <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
-          <div className="px-6 pt-6 pb-0 border-b bg-white">
+      <div className="mt-6 flex flex-1">
+        <div className="flex min-w-0 flex-1 flex-col">
+          <div className="border-b border-border bg-card px-2 pb-0 pt-2 sm:px-0">
             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
               <TabsList className="bg-transparent border-b border-transparent w-full justify-start h-12 p-0 space-x-6">
                 <TabsTrigger value="overview" className="data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:shadow-none rounded-none px-0 pb-3">Overview</TabsTrigger>
@@ -86,7 +84,7 @@ export function PositionDetail({ position, candidates, onBack, onSubmit, onCompa
             </Tabs>
           </div>
 
-          <div className="flex-1 overflow-y-auto p-6 bg-slate-50">
+          <div className="flex-1 p-2 sm:p-0 sm:pt-6">
             
             {activeTab === "overview" && (
               <div className="space-y-6 max-w-4xl">

@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { User } from "lucide-react";
+import { Button, PageHeader } from "@rinjani/shared-ui";
 import { Layout } from "../../components/shell/Layout";
 import { SuccessionBoard } from "./SuccessionBoard";
 import { PositionDetail } from "./PositionDetail";
@@ -8,8 +10,6 @@ import { BeritaAcara } from "./BeritaAcara";
 import { EmployeeSuccessionView } from "./EmployeeSuccessionView";
 import { mockPositions, mockCandidates } from "./mockData";
 import { Position, Candidate } from "./types";
-import { Button } from "../../components/ui/button";
-import { User } from "lucide-react";
 
 export function SuccessionPlanning() {
   const [currentView, setCurrentView] = useState<"board" | "detail" | "voting" | "berita_acara" | "employee">("board");
@@ -17,7 +17,6 @@ export function SuccessionPlanning() {
   const [showMatchUp, setShowMatchUp] = useState(false);
   const [compareCandidates, setCompareCandidates] = useState<Candidate[]>([]);
 
-  // Navigation Handlers
   const handleSelectPosition = (position: Position) => {
     setSelectedPosition(position);
     setCurrentView("detail");
@@ -28,13 +27,13 @@ export function SuccessionPlanning() {
     setSelectedPosition(null);
   };
 
-  const handleSubmitShortlist = (rankings: any) => {
+  const handleSubmitShortlist = (rankings: unknown) => {
     console.log("Submitting rankings", rankings);
     setCurrentView("voting");
   };
 
   const handleCompare = (candidates: Candidate[]) => {
-    setCompareCandidates(candidates.length > 0 ? candidates : mockCandidates); 
+    setCompareCandidates(candidates.length > 0 ? candidates : mockCandidates);
     setShowMatchUp(true);
   };
 
@@ -43,72 +42,74 @@ export function SuccessionPlanning() {
     setCurrentView("berita_acara");
   };
 
+  const isEmployeeView = currentView === "employee";
+  const showWorkspaceHeader = currentView === "board" || currentView === "employee";
+
   return (
-    <Layout breadcrumbs={[
-      { label: "Talent Management", href: "/talent" },
-      { label: "Succession Planning", href: "/talent/succession-planning" }
-    ]}>
-      
-      {/* View Switcher for Demo Purposes */}
-      <div className="fixed bottom-4 left-20 z-50">
-         <Button 
-            variant="secondary" 
-            size="sm" 
-            className="shadow-lg bg-slate-800 text-white hover:bg-slate-700 gap-2"
-            onClick={() => setCurrentView(currentView === "employee" ? "board" : "employee")}
-         >
-           <User className="w-4 h-4" />
-           {currentView === "employee" ? "Switch to Admin View" : "Switch to Employee View"}
-         </Button>
-      </div>
-
-      <div className="h-[calc(100vh-64px)] overflow-hidden">
-        {currentView === "board" && (
-          <SuccessionBoard 
-            positions={mockPositions} 
-            onSelectPosition={handleSelectPosition} 
+    <Layout>
+      <div className="mx-auto max-w-[var(--layout-max-width-workspace)] space-y-6 px-4 pb-10 pt-8 md:px-6 lg:px-8">
+        {showWorkspaceHeader ? (
+          <PageHeader
+            variant="workspace"
+            eyebrow="Talent Management"
+            title={isEmployeeView ? "My Succession Status" : "Succession Planning"}
+            description={
+              isEmployeeView
+                ? "Positions where you have been selected as a potential successor."
+                : "Manage succession plans for critical positions."
+            }
+            actions={
+              <Button
+                variant="outline"
+                onClick={() => setCurrentView(isEmployeeView ? "board" : "employee")}
+              >
+                <User className="size-4" />
+                {isEmployeeView ? "Admin view" : "Employee view"}
+              </Button>
+            }
           />
-        )}
+        ) : null}
 
-        {currentView === "detail" && selectedPosition && (
-          <PositionDetail 
+        {currentView === "board" ? (
+          <SuccessionBoard positions={mockPositions} onSelectPosition={handleSelectPosition} />
+        ) : null}
+
+        {currentView === "detail" && selectedPosition ? (
+          <PositionDetail
             position={selectedPosition}
-            candidates={mockCandidates} 
+            candidates={mockCandidates}
             onBack={handleBackToBoard}
             onSubmit={handleSubmitShortlist}
             onCompare={handleCompare}
           />
-        )}
+        ) : null}
 
-        {currentView === "voting" && selectedPosition && (
-          <TCVoting 
+        {currentView === "voting" && selectedPosition ? (
+          <TCVoting
             position={selectedPosition}
-            candidate={mockCandidates[0]} 
+            candidate={mockCandidates[0]}
             onBack={() => setCurrentView("detail")}
             onSubmit={handleVoteSubmit}
           />
-        )}
+        ) : null}
 
-        {currentView === "berita_acara" && selectedPosition && (
-          <BeritaAcara 
+        {currentView === "berita_acara" && selectedPosition ? (
+          <BeritaAcara
             position={selectedPosition}
             onBack={() => setCurrentView("voting")}
             onComplete={handleBackToBoard}
           />
-        )}
+        ) : null}
 
-        {currentView === "employee" && (
-          <EmployeeSuccessionView />
-        )}
+        {currentView === "employee" ? <EmployeeSuccessionView /> : null}
 
-        {/* Modal Overlay for MatchUp */}
-        {showMatchUp && selectedPosition && (
-          <ProfileMatchUp 
-            candidates={compareCandidates} 
+        {showMatchUp && selectedPosition ? (
+          <ProfileMatchUp
+            candidates={compareCandidates}
             position={selectedPosition}
             onClose={() => setShowMatchUp(false)}
           />
-        )}
+        ) : null}
       </div>
     </Layout>
   );

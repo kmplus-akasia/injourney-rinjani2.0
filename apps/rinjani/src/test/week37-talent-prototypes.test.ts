@@ -1,3 +1,4 @@
+/** @vitest-environment node */
 import { describe, expect, it } from "vitest";
 import { applyAnonymityThreshold, channelsFromBreakdown } from "@talent/lib/360-assessment/anonymity";
 import { compareCompetencyScores, isCompetencyGap } from "@talent/lib/360-assessment/compare";
@@ -8,6 +9,13 @@ import {
   jobFamilyGateAllows,
   nextPipelineStage,
 } from "@talent/lib/job-tender-admin";
+import {
+  listApplicants,
+  moveApplicant,
+  resetJobTenderPrototypeState,
+  setVacancyStatus,
+} from "@talent/data/jobTenderAdminData";
+import { emitSavedJobReminder, listJobTenderDeliveryLog } from "@talent/lib/jobTenderNotifications";
 import {
   getMissingFields,
   isPositionComplete,
@@ -101,6 +109,40 @@ describe("Job Tender HQ gates", () => {
     expect(nextPipelineStage("submitted")).toBe("under_review");
     expect(nextPipelineStage("interview")).toBe("offered");
     expect(nextPipelineStage("accepted")).toBeNull();
+  });
+
+  it("rejects an interview move when invite fields are missing", () => {
+    resetJobTenderPrototypeState();
+    expect(() => moveApplicant("APP-001", "interview")).toThrow(/Interview invitation requires/);
+    expect(listApplicants().find((item) => item.id === "APP-001")?.stage).toBe("shortlisted");
+    expect(listJobTenderDeliveryLog().some((row) => row.trigger === "interview_invitation")).toBe(false);
+  });
+
+  it("sweeps remaining open applicants to rejected on vacancy close", () => {
+    resetJobTenderPrototypeState();
+    setVacancyStatus("VAC-EL-001", "closed");
+    const remaining = listApplicants("VAC-EL-001");
+    expect(remaining.every((item) => item.stage === "rejected")).toBe(true);
+    const resultRows = listJobTenderDeliveryLog().filter((row) => row.trigger === "close_result");
+    expect(resultRows.length).toBeGreaterThanOrEqual(3);
+    expect(resultRows[0].filledBody).toContain("Vacancy closed");
+  });
+
+  it("records a delivery row when a saved-job reminder is emitted", () => {
+    resetJobTenderPrototypeState();
+    const row = emitSavedJobReminder({
+      vacancy: {
+        id: "VAC-EL-001",
+        title: "Project Lead — Rinjani 2.0 Migration",
+        company: "InJourney Holding",
+        deadline: "2026-09-20",
+      },
+      employeeName: "Dewi Ratnasari",
+      horizon: "H-3",
+    });
+    expect(row.trigger).toBe("saved_job_reminder");
+    expect(row.filledSubject).toContain("H-3");
+    expect(listJobTenderDeliveryLog().some((item) => item.id === row.id)).toBe(true);
   });
 });
 

@@ -15,6 +15,7 @@ import PublicProfileView from "@portal/components/PublicProfileView";
 import Analytics from "@portal/components/Analytics";
 import { MailManagement } from "@portal/components/MailManagement";
 import { OffboardingStatus } from "@portal/components/OffboardingStatus";
+import { OnboardingJourney } from "@portal/components/onboarding/OnboardingJourney";
 import { OnboardingProvider } from "@portal/components/onboarding/onboarding-context";
 
 interface SharedPortalProps {
@@ -106,5 +107,18 @@ export function PortalOffboardingPage({ userEmail }: Pick<SharedPortalProps, "us
       employeeName={employeeName}
       lastWorkingDay={new Date(Date.now() + 14 * 24 * 60 * 60 * 1000)}
     />
+  );
+}
+
+export function PortalOnboardingPage({ userEmail }: Pick<SharedPortalProps, "userEmail">) {
+  const employeeName = useMemo(() => {
+    if (userEmail === "binavia@injourney.co.id") return "Binavia Wardhani";
+    if (userEmail.startsWith("dimas")) return "Dimas Sayyid";
+    return userEmail.split("@")[0] || "New Joiner";
+  }, [userEmail]);
+  return (
+    <OnboardingProvider userId={userEmail}>
+      <OnboardingJourney employeeName={employeeName} userEmail={userEmail} />
+    </OnboardingProvider>
   );
 }

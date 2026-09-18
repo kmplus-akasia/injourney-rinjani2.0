@@ -1,5 +1,7 @@
 # Design Consistency Audit
 
+Overall three-platform visual QA (saved 18 September 2026): [VISUAL_QA_THREE_PLATFORMS_2026-09-18.html](./VISUAL_QA_THREE_PLATFORMS_2026-09-18.html). Verdict: not consistent yet. Live inner-page screenshots in that file are still pending a logged-in pass.
+
 This checklist tracks the current design-system unification pass.
 
 ## Shell and navigation

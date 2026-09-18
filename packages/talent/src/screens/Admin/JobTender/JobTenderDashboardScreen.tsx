@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router";
 import { Briefcase, Clock, GraduationCap, Sparkles } from "lucide-react";
+import { toast } from "sonner";
 import {
   Badge,
   Button,
@@ -21,7 +22,7 @@ import { AdminLayout } from "../../../components/shell/AdminLayout";
 import { isPositionComplete } from "../../../lib/org-management";
 import { isSecondaryAssignment, opportunityLabel, type OpportunityType } from "../../../lib/job-tender-admin";
 import { getPosition } from "../../../data/orgManagementData";
-import { jobTenderOverview, listVacancies, subscribeJobTenderStore } from "../../../data/jobTenderAdminData";
+import { jobTenderOverview, listVacancies, runSavedJobRemindersNow, subscribeJobTenderStore } from "../../../data/jobTenderAdminData";
 
 const STATUS_TONE: Record<string, "neutral" | "info" | "success" | "warning" | "destructive"> = {
   draft: "neutral",
@@ -60,9 +61,25 @@ export function JobTenderDashboardScreen() {
           description="Publish internal opportunities from a complete Position Master. Secondary Assignment covers Experience and Learning project assignments while Talent Mobility stays on structural moves."
           badge={<StatusBadge status="info">BPR-THQ-005</StatusBadge>}
           actions={
-            <Button asChild>
-              <Link to="/talent/admin/job-tender/create">Create vacancy</Link>
-            </Button>
+            <div className="flex flex-wrap gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => {
+                  const rows = runSavedJobRemindersNow();
+                  if (rows.length === 0) {
+                    toast.error("No published vacancies to remind against.");
+                    return;
+                  }
+                  toast.success("H-3 and H-1 reminders sent to employees who saved published vacancies.");
+                }}
+              >
+                Run reminder now
+              </Button>
+              <Button asChild>
+                <Link to="/talent/admin/job-tender/create">Create vacancy</Link>
+              </Button>
+            </div>
           }
         />
 

@@ -1,0 +1,446 @@
+<!doctype html>
+<html lang="en" data-brand="injourney">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rinjani three-platform design-system QA — 18 September 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Fraunces:ital,opsz,wght@0,9..144,500;1,9..144,500&family=IBM+Plex+Mono:wght@400;500&family=Inter:ital,wght@0,400;0,500;0,600;1,400&family=Lato:ital,wght@0,400;0,700;1,400&family=Lora:ital,opsz,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #F3EBE0;
+  --paper: #FFFBF5;
+  --ink: #181616;
+  --muted: #5C534C;
+  --faint: #8A8178;
+  --line: #E4D6C6;
+  --accent: #0E7C7B;
+  --accent-2: #C45C26;
+  --tint: #EFE4D4;
+  --chip: #2A9A90;
+  --print: #C9A227;
+  --success: #2F7D4A;
+  --warning: #C9891A;
+  --danger: #B42318;
+  --info: #1F6B8A;
+  --sans: 'Inter', system-ui, sans-serif;
+  --serif: 'Fraunces', Georgia, serif;
+  --mono: 'IBM Plex Mono', ui-monospace, monospace;
+  --radius: 14px;
+  --radius-lg: 20px;
+  --shadow: 0 16px 40px -18px rgba(24,22,22,.22);
+  --border: 1.5px solid var(--line);
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 15px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+a { color: var(--accent); }
+code, .mono { font-family: var(--mono); }
+.page { max-width: 980px; margin: 0 auto; padding: 48px 24px 96px; }
+h1 { font-family: var(--serif); font-weight: 500; font-size: 36px; letter-spacing: -0.02em; margin: 0 0 8px; line-height: 1.15; }
+.sub { color: var(--muted); margin: 0 0 28px; max-width: 66ch; }
+h2 { font-family: var(--serif); font-weight: 500; font-size: 24px; margin: 0 0 8px; }
+h3 { font-family: var(--serif); font-weight: 500; font-size: 18px; margin: 0 0 8px; }
+hr.rule { border: none; border-top: 1px solid var(--line); margin: 0 0 24px; }
+section { margin-bottom: 56px; }
+.t-caption { font-size: 12px; font-weight: 500; letter-spacing: .06em; text-transform: uppercase; color: var(--faint); }
+.hero-mark {
+  width: 48px; height: 48px; border-radius: 14px;
+  background: linear-gradient(135deg, var(--accent-2), var(--accent));
+  margin-bottom: 16px;
+}
+.badge { display: inline-flex; align-items: center; height: 22px; padding: 0 9px; border-radius: 999px; font-size: 12px; font-weight: 500; }
+.badge-danger { background: color-mix(in srgb, var(--danger) 14%, white); color: var(--danger); }
+.badge-warning { background: color-mix(in srgb, var(--warning) 18%, white); color: #8A5A0E; }
+.badge-success { background: color-mix(in srgb, var(--success) 16%, white); color: var(--success); }
+.badge-accent { background: color-mix(in srgb, var(--accent) 14%, white); color: var(--accent); }
+.badge-neutral { background: var(--tint); color: var(--muted); }
+.chip-row { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0 8px; }
+.chip {
+  display: inline-flex; align-items: center; gap: 8px; padding: 8px 12px;
+  border-radius: 8px; border: var(--border); background: var(--paper);
+  font-family: var(--mono); font-size: 12.5px; text-decoration: none; color: var(--ink);
+}
+.chip .dot { width: 9px; height: 9px; border-radius: 50%; }
+.chip.safe { background: color-mix(in srgb, var(--success) 12%, white); }
+.chip.medium { background: var(--tint); }
+.chip.attention { background: color-mix(in srgb, var(--danger) 10%, white); border-color: color-mix(in srgb, var(--danger) 35%, var(--line)); }
+.callout { border: var(--border); border-left-width: 4px; border-left-color: var(--accent); background: var(--paper); padding: 14px 16px; border-radius: var(--radius); }
+.callout.warn { border-left-color: var(--warning); }
+.callout.danger { border-left-color: var(--danger); }
+.stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 16px 0 0; }
+.stat {
+  background: var(--paper); border: var(--border); border-radius: var(--radius);
+  padding: 16px 18px; box-shadow: var(--shadow);
+}
+.stat b { display: block; font-family: var(--serif); font-size: 28px; font-weight: 500; line-height: 1.1; }
+.stat span { color: var(--muted); font-size: 13px; }
+table.plain { width: 100%; border-collapse: collapse; background: var(--paper); border: var(--border); border-radius: var(--radius); overflow: hidden; }
+table.plain th, table.plain td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); font-size: 13px; vertical-align: top; }
+table.plain th { font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: var(--faint); font-weight: 500; }
+table.plain tr:last-child td { border-bottom: none; }
+.bar { height: 8px; background: var(--tint); border-radius: 99px; overflow: hidden; margin-top: 6px; }
+.bar > i { display: block; height: 100%; background: var(--accent); }
+.bar.danger > i { background: var(--danger); }
+.bar.warn > i { background: var(--warning); }
+.file-card, .panel {
+  background: var(--paper); border: var(--border); border-radius: var(--radius-lg); overflow: hidden;
+}
+.file-head { display: flex; justify-content: space-between; gap: 12px; padding: 14px 16px; border-bottom: 1px solid var(--line); align-items: center; }
+.note {
+  margin: 0; padding: 14px 16px; font-size: 14px;
+  border-top: 1px solid var(--line);
+}
+.note.block { border-left: 4px solid var(--danger); background: color-mix(in srgb, var(--danger) 8%, white); }
+.note.nit { border-left: 4px solid var(--warning); background: color-mix(in srgb, var(--warning) 10%, white); }
+.note.ok { border-left: 4px solid var(--success); background: color-mix(in srgb, var(--success) 10%, white); }
+.btn { display: inline-flex; align-items: center; height: 36px; padding: 0 16px; border-radius: var(--radius); border: 1.5px solid transparent; font: 500 14px var(--sans); cursor: pointer; }
+.btn-primary { background: var(--accent); color: #fff; }
+.btn-secondary { background: var(--paper); color: var(--ink); border-color: var(--line); }
+.copy-row { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+.prompt {
+  background: var(--ink); color: #f4f4f4; border-radius: var(--radius-lg);
+  padding: 18px 20px; font-family: var(--mono); font-size: 13px; line-height: 1.5; white-space: pre-wrap;
+}
+.toast {
+  position: fixed; bottom: 20px; right: 20px; background: var(--ink); color: #fff;
+  padding: 8px 12px; border-radius: 8px; font-size: 12px; opacity: 0; transition: opacity .2s; pointer-events: none;
+}
+.toast.show { opacity: 1; }
+.swatch-row { display: flex; flex-wrap: wrap; gap: 14px; }
+.swatch .chip-color { width: 48px; height: 48px; border-radius: 8px; border: var(--border); }
+.swatch .hex { font-family: var(--mono); font-size: 12px; display: block; margin-top: 6px; }
+.swatch .token { font-family: var(--mono); font-size: 11px; color: var(--faint); display: block; }
+ol.tight, ul.tight { margin: 8px 0 0; padding-left: 20px; }
+ol.tight li, ul.tight li { margin: 6px 0; }
+@media (max-width: 640px) {
+  h1 { font-size: 28px; }
+  .page { padding: 28px 16px 72px; }
+  .stats { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="hero-mark" aria-hidden="true"></div>
+  <p class="t-caption">InJourney / Rinjani Integrated · 18 September 2026</p>
+  <h1>Three-platform design-system QA</h1>
+  <p class="sub">This is the first saved overall audit of whether Portal, Talent, and Performance look and behave like one product. It was not saved in an earlier session. Live inner-page screenshots are still pending a logged-in pass. The implementation score below is from the running prototype code plus the login screen.</p>
+
+  <div class="chip-row">
+    <span class="badge badge-danger">Not consistent yet</span>
+    <span class="badge badge-warning">Live pages pending login</span>
+    <span class="badge badge-accent">Tokens exist</span>
+    <span class="badge badge-success">Performance (current) is closest</span>
+  </div>
+
+  <div class="stats">
+    <div class="stat">
+      <b>1 / 3</b>
+      <span>platforms near design-system adoption</span>
+    </div>
+    <div class="stat">
+      <b>138</b>
+      <span>duplicate local UI primitives across Portal, Talent, and old Performance</span>
+    </div>
+    <div class="stat">
+      <b>0</b>
+      <span>hardcoded hex in current Performance screens</span>
+    </div>
+  </div>
+
+  <section>
+    <h2>Verdict</h2>
+    <hr class="rule">
+    <div class="callout danger">
+      The design system is specified and the shared shell is in place. It is not yet implemented consistently on all three platforms. A user switching Portal → Talent → Performance still meets three visual languages: Figma-imported Portal, mixed Talent, and token-clean Performance.
+    </div>
+    <p>The product should feel like one internal operating system: deep teal shell, white workspace, Plus Jakarta Sans, orange for attention, green for progress, red only for harm. Current Performance follows that. Portal home and login do not. Talent is halfway.</p>
+  </section>
+
+  <section>
+    <h2>What existed before this file</h2>
+    <hr class="rule">
+    <p>Nothing in the repo was a complete visual QA of the live prototype across all three platforms. These are the earlier pieces, and they are not this report:</p>
+    <table class="plain">
+      <thead>
+        <tr>
+          <th>Artifact</th>
+          <th>Date</th>
+          <th>What it covers</th>
+          <th>Why it is not enough</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Design Consistency Audit</td>
+          <td>April 2026</td>
+          <td>Shell unification checklist</td>
+          <td>Visual checks are still unchecked: duplicate shell, switcher, token parity</td>
+        </tr>
+        <tr>
+          <td>Hardcoded color audit</td>
+          <td>8 April 2026</td>
+          <td>Hex grep vs theme tokens</td>
+          <td>Code inventory only. No screenshots. Portal/Talent hotspots remain</td>
+        </tr>
+        <tr>
+          <td>Rinjani UI QA plan</td>
+          <td>11 September 2026</td>
+          <td>Five Talent screenshots: padding, sheets, dashboards, duplicate components</td>
+          <td>Talent only. Report-only. All four fix items still pending</td>
+        </tr>
+        <tr>
+          <td>Feature-adjustment QA notes</td>
+          <td>18 September 2026</td>
+          <td>Switcher, Onboarding, Job Tender notices</td>
+          <td>Feature checklist in chat. Not a design-system audit</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section>
+    <h2>Scorecard</h2>
+    <hr class="rule">
+    <p class="sub">Canonical rules: teal shell, white workspace, Plus Jakarta Sans, semantic tokens, one header, one sidebar, shared components. Higher bar fill means closer to that system.</p>
+    <table class="plain">
+      <thead>
+        <tr>
+          <th>Check</th>
+          <th>Portal</th>
+          <th>Talent</th>
+          <th>Performance</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Lives in the shared shell</td>
+          <td>Yes in the integrated host</td>
+          <td>Yes when embedded; local header/sidebar still exist for standalone</td>
+          <td>Yes. Current platform is the v2 routes. Old Performance is hidden and redirects</td>
+        </tr>
+        <tr>
+          <td>Uses shared tokens instead of raw hex</td>
+          <td>Fail. 496 hex hits outside Figma imports; home screen is a Figma frame with 100+ hex colors</td>
+          <td>Partial. 101 hex hits outside imports; some screens use tokens</td>
+          <td>Pass. Current Performance has 0 hex in screen code</td>
+        </tr>
+        <tr>
+          <td>Uses @rinjani/shared-ui</td>
+          <td>Fail. 3 import sites. Home is a generated Frame</td>
+          <td>Partial. 27 shared-ui import sites vs 344 local button/card/sheet imports</td>
+          <td>Pass. 28 shared-ui import sites. Has a shared page frame</td>
+        </tr>
+        <tr>
+          <td>Typography = Plus Jakarta Sans</td>
+          <td>Fail. Login and Microsoft mock use Inter. Analytics also hard-sets Inter</td>
+          <td>Partial. Product screens mostly inherit the theme. Figma tables still specify Inter</td>
+          <td>Pass on current screens. Old Performance still carries Inter in leftover imports</td>
+        </tr>
+        <tr>
+          <td>Page inset 24–32px</td>
+          <td>Unknown live. Portal home is a full-bleed Figma composition, not PageFrame</td>
+          <td>Fail on several routes from the 11 Sep screenshots: Job Tender and Career Aspiration sit flush to the canvas</td>
+          <td>Pass pattern: page frame uses 24px padding and layout max-width tokens</td>
+        </tr>
+        <tr>
+          <td>One Button / Sheet / Card primitive</td>
+          <td>Fail. Full local shadcn copy (46 files)</td>
+          <td>Fail. Full local shadcn copy (46 files) plus a Job Tender PageHeader fork</td>
+          <td>Pass on current screens. Old package still has the same 46-file kit</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section>
+    <h2>Token and typeface drift</h2>
+    <hr class="rule">
+    <p>Runtime truth for the product is the shared theme: primary teal <span class="mono">#006573</span>, orange <span class="mono">#F47C20</span>, green <span class="mono">#90BC40</span>, Plus Jakarta Sans. Counts below are hex / arbitrary color hits in TypeScript UI files.</p>
+    <table class="plain">
+      <thead>
+        <tr>
+          <th>Package</th>
+          <th>Hex hits</th>
+          <th>Excluding Figma imports</th>
+          <th>Inter mentions</th>
+          <th>shared-ui imports</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Portal</td>
+          <td>1,569<div class="bar danger"><i style="width:100%"></i></div></td>
+          <td>496</td>
+          <td>756</td>
+          <td>3</td>
+        </tr>
+        <tr>
+          <td>Talent</td>
+          <td>411<div class="bar warn"><i style="width:26%"></i></div></td>
+          <td>101</td>
+          <td>161</td>
+          <td>27</td>
+        </tr>
+        <tr>
+          <td>Old Performance (hidden)</td>
+          <td>1,294<div class="bar danger"><i style="width:82%"></i></div></td>
+          <td>248</td>
+          <td>633</td>
+          <td>0</td>
+        </tr>
+        <tr>
+          <td>Current Performance</td>
+          <td>0<div class="bar"><i style="width:2%"></i></div></td>
+          <td>0</td>
+          <td>3</td>
+          <td>28</td>
+        </tr>
+        <tr>
+          <td>Shared UI + shell</td>
+          <td>0</td>
+          <td>0</td>
+          <td>0</td>
+          <td>canonical</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>Shared-ui itself is clean. The gap is adoption, not a missing spec.</p>
+  </section>
+
+  <section>
+    <h2>Platform notes</h2>
+    <hr class="rule">
+
+    <article class="file-card" style="margin-bottom:16px">
+      <div class="file-head">
+        <strong>Portal</strong>
+        <span class="badge badge-danger">Largest drift</span>
+      </div>
+      <p class="note block">Home is still a Figma export (<span class="mono">Frame1000001738</span>) mounted inside the shared shell. That screen brings its own colors, type, and layout instead of PageHeader / StatCard / shared cards.</p>
+      <p class="note">Login and the Microsoft mock also sit outside the product system: Inter, Microsoft blue, gray paper. That is acceptable as a fake Microsoft step. The Rinjani sign-in around it should still use Plus Jakarta Sans and teal primary actions.</p>
+      <p class="note">Package-local <span class="mono">App.tsx</span> still composes a second Rinjani header and sidebar. The integrated host does not use that App, but the leftover chrome is a trap for future screens.</p>
+    </article>
+
+    <article class="file-card" style="margin-bottom:16px">
+      <div class="file-head">
+        <strong>Talent</strong>
+        <span class="badge badge-warning">Mixed</span>
+      </div>
+      <p class="note nit">Newer HQ screens (Organization, Competency, some Job Tender admin, Talent Home) import shared PageHeader. Most journey screens still import the local shadcn Button/Card/Sheet.</p>
+      <p class="note">When Talent is inside the host, its layout unwraps children and drops the 24px inset. Job Tender Explore uses zero horizontal padding. Career Aspiration is 16px, below the 24–32px page inset. Sheets clip footers at 100% zoom. Those defects were confirmed on 11 September and are still open.</p>
+    </article>
+
+    <article class="file-card">
+      <div class="file-head">
+        <strong>Performance</strong>
+        <span class="badge badge-success">Current platform is the model</span>
+      </div>
+      <p class="note ok">The live switcher entry is Rinjani Performance on <span class="mono">/performance-v2</span>. Screens use shared-ui, a page frame with 24px padding, and no raw hex. This is the visual target for the other two platforms.</p>
+      <p class="note">The old Performance package is hidden and redirects, but it still contains a full Portal-like Figma import tree, local shell, and 46 local primitives. Do not put it back in the switcher. Treat it as dead UI, not a second design language.</p>
+    </article>
+  </section>
+
+  <section>
+    <h2>Shell (shared across all three)</h2>
+    <hr class="rule">
+    <p>The integrated host owns one AppShell: teal rail, teal command bar, white rounded workspace, platform switcher, search, notifications, profile. Platform list is Portal, Rinjani Talent, Rinjani Performance. Deprecated Performance is <span class="mono">hidden: true</span>.</p>
+    <ul class="tight">
+      <li>Pass in code: one header, one sidebar, header owns switching, Talent unwraps its nested shell when embedded.</li>
+      <li>Not visually confirmed in this pass: collapsed rail, active nav, workspace corner radius, notification popover, profile menu, Design System page as Admin.</li>
+      <li>Login is outside the shell, which is correct, but the login visual language does not match the shell.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Must fix now vs later</h2>
+    <hr class="rule">
+    <h3>Now — what a reviewer will see as “not one product”</h3>
+    <ol class="tight">
+      <li>Promote one PageFrame into shared-ui and put it on Portal home, Talent journey pages, and keep it on Performance. Kill zero-padding and <span class="mono">calc(100vh-64px)</span> routes.</li>
+      <li>Harden the shared Sheet (scroll + sticky actions) and stop using the three local Sheet copies on live Talent panels.</li>
+      <li>Stop shipping Figma Frames as Portal home. Rebuild the dashboard with shared Card / StatCard / Banner against tokens.</li>
+      <li>Replace local Button/Tabs/PageHeader on the screens people actually click this week (Portal home, Career Aspiration, Job Tender, Talent Pool).</li>
+    </ol>
+    <h3>Later — cleanup that does not change the first impression</h3>
+    <ol class="tight">
+      <li>Delete or quarantine <span class="mono">packages/*/src/imports</span> and unused local shadcn kits.</li>
+      <li>Remove leftover Portal/Performance App.tsx shells.</li>
+      <li>Map remaining hex in IDP, Analytics, and charts to semantic tokens.</li>
+      <li>Remove legacy CSS aliases after copied screens are gone.</li>
+    </ol>
+  </section>
+
+  <section>
+    <h2>Evidence still missing</h2>
+    <hr class="rule">
+    <div class="callout warn">
+      This file is saved so the overall result exists. It is not a pixel walkthrough of every module. The Cursor browser reached the Microsoft mock sign-in and could not complete login in this session, so Portal home, Talent Home, and My KPI were not screenshot in-product today.
+    </div>
+    <p>Complete the live pass at <span class="mono">http://127.0.0.1:3001</span> after signing in as Binavia, then capture:</p>
+    <ul class="tight">
+      <li>Portal home, My Profile, Onboarding, Settings</li>
+      <li>Talent Home, Career Aspiration, Job Tender Explore, Talent Pool sheet</li>
+      <li>Performance My KPI, My Team KPI, KPI Library</li>
+      <li>Platform switcher open, sidebar expanded and collapsed, Admin Design System page</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Copy back to the agent</h2>
+    <hr class="rule">
+    <p>Use this if the next step is a logged-in visual pass, not more inventory.</p>
+    <div class="prompt" id="prompt">Continue the Rinjani three-platform visual QA saved at docs/design-system-overhaul-2026-04-07/VISUAL_QA_THREE_PLATFORMS_2026-09-18.html.
+
+I am logged in at http://127.0.0.1:3001. Capture Portal, Talent, and current Performance (not the hidden package). Check: one shell, switcher labels, page inset 24–32px, Plus Jakarta Sans, teal/orange/green meaning, shared Button/Sheet/PageHeader vs local copies, no duplicate sidebar.
+
+Update the HTML with screenshots and pass/fail per page. Do not start a redesign until the live scorecard is filled.</div>
+    <div class="copy-row">
+      <button class="btn btn-primary" id="copy-prompt" type="button">Copy prompt</button>
+      <button class="btn btn-secondary" id="copy-md" type="button">Copy as Markdown</button>
+    </div>
+  </section>
+</div>
+<div class="toast" role="status"></div>
+<script>
+const md = `# Rinjani three-platform design-system QA — 18 Sep 2026
+
+Verdict: not consistent yet. Tokens and shared shell exist. Portal is Figma-imported. Talent is mixed. Current Performance is the model.
+
+Must fix now:
+1. Shared PageFrame + 24–32px inset on Portal and Talent
+2. Shared Sheet scroll/footer on Talent panels
+3. Rebuild Portal home off Figma Frame
+4. Shared Button/Tabs/PageHeader on high-traffic screens
+
+Later: delete local shadcn kits and Figma imports.
+
+Live screenshots still pending login. Continue from docs/design-system-overhaul-2026-04-07/VISUAL_QA_THREE_PLATFORMS_2026-09-18.html`;
+
+const toast = document.querySelector('.toast');
+function show(msg) {
+  toast.textContent = msg;
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 1400);
+}
+document.getElementById('copy-prompt').onclick = async () => {
+  await navigator.clipboard.writeText(document.getElementById('prompt').textContent);
+  show('Prompt copied');
+};
+document.getElementById('copy-md').onclick = async () => {
+  await navigator.clipboard.writeText(md);
+  show('Markdown copied');
+};
+</script>
+</body>
+</html>

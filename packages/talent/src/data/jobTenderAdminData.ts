@@ -1,5 +1,6 @@
 import { isPositionComplete } from "../lib/org-management";
 import {
+  ACTIVE_APPLICATION_STAGES,
   isSecondaryAssignment,
   type ApplicantStage,
   type JobTenderApplicant,
@@ -7,6 +8,17 @@ import {
   type OpportunityType,
   type VacancyStatus,
 } from "../lib/job-tender-admin";
+import {
+  emitCloseResult,
+  emitInterviewInvitation,
+  emitPipelineChanged,
+  emitSavedJobReminder,
+  emitSavedVacancyClosed,
+  emitVacancyPublished,
+  missingInterviewInviteFields,
+  resetJobTenderNotifications,
+  type InterviewInviteFields,
+} from "../lib/jobTenderNotifications";
 import { getPosition, listPositions } from "./orgManagementData";
 
 const initialVacancies: JobTenderVacancy[] = [
@@ -261,6 +273,7 @@ export function createVacancy(input: {
 }
 
 export function setVacancyStatus(id: string, status: VacancyStatus, approvalReason?: string) {
+  const previous = getVacancy(id);
   vacancies = vacancies.map((item) =>
     item.id === id
       ? {
@@ -271,13 +284,88 @@ export function setVacancyStatus(id: string, status: VacancyStatus, approvalReas
         }
       : item,
   );
+  const vacancy = getVacancy(id);
+  if (vacancy && status === "published" && previous?.status !== "published") {
+    emitVacancyPublished(vacancy);
+  }
+  if (vacancy && (status === "closed" || status === "auto_closed") && previous && previous.status !== "closed" && previous.status !== "auto_closed") {
+    emitSavedVacancyClosed(vacancy);
+    sweepOpenApplicantsOnClose(vacancy);
+  }
   notify();
-  return getVacancy(id);
+  return vacancy;
 }
 
-export function moveApplicant(id: string, stage: ApplicantStage) {
+function sweepOpenApplicantsOnClose(vacancy: JobTenderVacancy) {
+  const openIds = applicants
+    .filter((item) => item.vacancyId === vacancy.id && ACTIVE_APPLICATION_STAGES.includes(item.stage))
+    .map((item) => item.id);
+
+  applicants = applicants.map((item) =>
+    openIds.includes(item.id) ? { ...item, stage: "rejected" } : item,
+  );
+
+  openIds.forEach((applicantId) => {
+    const applicant = applicants.find((item) => item.id === applicantId);
+    if (applicant) {
+      emitCloseResult(applicant, vacancy, "rejected", "Vacancy closed");
+    }
+  });
+}
+
+export function moveApplicant(id: string, stage: ApplicantStage, invite?: InterviewInviteFields) {
+  const applicant = applicants.find((item) => item.id === id);
+  if (!applicant) {
+    throw new Error("Applicant not found");
+  }
+  if (stage === "interview") {
+    const missing = missingInterviewInviteFields(invite);
+    if (missing.length > 0) {
+      throw new Error(`Interview invitation requires: ${missing.join(", ")}`);
+    }
+  }
+
+  const vacancy = getVacancy(applicant.vacancyId);
   applicants = applicants.map((item) => (item.id === id ? { ...item, stage } : item));
+  const updated = applicants.find((item) => item.id === id);
+  if (!updated || !vacancy) {
+    notify();
+    return updated;
+  }
+
+  emitPipelineChanged(updated, vacancy, stage);
+  if (stage === "interview" && invite) {
+    emitInterviewInvitation(updated, vacancy, invite);
+  }
+  if (stage === "accepted") {
+    emitCloseResult(updated, vacancy, "accepted", "Selected for the vacancy");
+  }
+  if (stage === "rejected") {
+    emitCloseResult(updated, vacancy, "rejected", "Not selected");
+  }
   notify();
+  return updated;
+}
+
+export function resetJobTenderPrototypeState() {
+  vacancies = initialVacancies.map((item) => ({ ...item }));
+  applicants = initialApplicants.map((item) => ({ ...item }));
+  resetJobTenderNotifications();
+  notify();
+}
+
+const SAVED_JOB_RECIPIENTS = ["Binavia Wardhani", "Budi Santoso"];
+
+export function runSavedJobRemindersNow(vacancyId?: string) {
+  const targets = (vacancyId ? [getVacancy(vacancyId)] : vacancies).filter(
+    (item): item is JobTenderVacancy => Boolean(item) && item.status === "published",
+  );
+  return targets.flatMap((vacancy) =>
+    SAVED_JOB_RECIPIENTS.flatMap((employeeName) => [
+      emitSavedJobReminder({ vacancy, employeeName, horizon: "H-3" }),
+      emitSavedJobReminder({ vacancy, employeeName, horizon: "H-1" }),
+    ]),
+  );
 }
 
 export function selectablePositions() {

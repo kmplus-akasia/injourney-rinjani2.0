@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import { useState } from "react";
 import { Navigate, Outlet, createHashRouter, useLocation, useParams } from "react-router";
 import { AppShell } from "@rinjani/shell";
+import { Toaster } from "@rinjani/shared-ui";
 import { SessionProvider, useSession } from "./session";
 import { MyKpiPhaseToggle } from "./my-kpi-phase-toggle";
 import { MyTeamKpiPhaseToggle } from "./my-team-kpi-phase-toggle";
@@ -11,27 +12,8 @@ import type { UserRole } from "@rinjani/shared-types";
 import SignIn from "@portal/imports/SignIn";
 import { MicrosoftLoginPage } from "@portal/components/MicrosoftLoginPage";
 import { LoadingScreen } from "@portal/components/LoadingScreen";
-import { PortalAnalyticsPage, PortalDashboardPage, PortalEmployeeProfilePage, PortalMailPage, PortalMyProfilePage, PortalOffboardingPage, PortalPolicyPage, PortalSettingsPage, PortalSurveyAnalyticsPage, PortalSurveyManagementPage, PortalSurveyPage, PortalSurveyTakePage } from "./portal-pages";
+import { PortalAnalyticsPage, PortalDashboardPage, PortalEmployeeProfilePage, PortalMailPage, PortalMyProfilePage, PortalOffboardingPage, PortalOnboardingPage, PortalPolicyPage, PortalSettingsPage, PortalSurveyAnalyticsPage, PortalSurveyManagementPage, PortalSurveyPage, PortalSurveyTakePage } from "./portal-pages";
 import { DesignSystemPage } from "./design-system-page";
-import {
-  PerformanceCheckInPage,
-  PerformanceEvaluationPage,
-  PerformanceGoalSettingPage,
-  PerformanceHeadquarterPage,
-  PerformanceLibraryDetailPage,
-  PerformanceLibraryPage,
-  PerformanceLibrarySubmitPage,
-  PerformanceMemberDetailPage,
-  PerformanceMemberPlanningPage,
-  PerformanceMyKPIDashboardPage,
-  PerformanceMyTeamCascadePage,
-  PerformanceMyTeamDashboardPage,
-  PerformanceMyTeamPlanningPage,
-  PerformancePlanningPage,
-  PerformanceTreePage,
-  PerformanceYearEndPage,
-  normalizePerformanceRoutes,
-} from "./performance-pages";
 import { talentPages } from "./talent-pages";
 import {
   PerformanceV2IndexRedirect,
@@ -51,7 +33,12 @@ import {
 } from "./performance-pages-v2";
 
 function Providers({ children }: { children: ReactNode }) {
-  return <SessionProvider>{children}</SessionProvider>;
+  return (
+    <SessionProvider>
+      {children}
+      <Toaster />
+    </SessionProvider>
+  );
 }
 
 function LoginPage() {
@@ -162,8 +149,6 @@ function PortalRouteOutlet() {
   );
 }
 
-const perfDefaults = normalizePerformanceRoutes();
-
 function LegacyTalentRedirect({
   buildPath,
 }: {
@@ -171,6 +156,26 @@ function LegacyTalentRedirect({
 }) {
   const params = useParams();
   return <Navigate to={buildPath(params)} replace />;
+}
+
+function LegacyPerformanceRedirect() {
+  const { pathname } = useLocation();
+  const suffix = pathname.replace(/^\/performance(?=\/|$)/, "") || "/my-kpi";
+  const mapped =
+    suffix === "" || suffix === "/"
+      ? "/my-kpi"
+      : suffix === "/my-kpi/goal-setting"
+        ? "/my-kpi/planning"
+        : suffix === "/my-kpi/evaluation"
+          ? "/my-kpi"
+          : suffix === "/my-team-kpi" || suffix === "/my-team-kpi/cascade"
+            ? suffix === "/my-team-kpi/cascade"
+              ? "/my-team-kpi/monitoring"
+              : "/my-team-kpi/planning"
+            : suffix.startsWith("/my-team-kpi/planning/")
+              ? suffix.replace("/my-team-kpi/planning/", "/my-team-kpi/member/")
+              : suffix;
+  return <Navigate to={`/performance-v2${mapped}`} replace />;
 }
 
 export const router = createHashRouter([
@@ -244,6 +249,10 @@ export const router = createHashRouter([
                   {
                     path: "offboarding",
                     element: <PortalContextRoute render={(props) => <PortalOffboardingPage userEmail={props.userEmail} />} />
+                  },
+                  {
+                    path: "onboarding",
+                    element: <PortalContextRoute render={(props) => <PortalOnboardingPage userEmail={props.userEmail} />} />
                   },
                   {
                     path: "settings",
@@ -377,24 +386,8 @@ export const router = createHashRouter([
                   { path: "360-assessment-hq/:id/monitoring", element: <LegacyTalentRedirect buildPath={({ id }) => `/talent/360-assessment-hq/${id ?? ""}/monitoring`} /> },
                   { path: "360-assessment-hq/:id/results", element: <LegacyTalentRedirect buildPath={({ id }) => `/talent/360-assessment-hq/${id ?? ""}/results`} /> },
 
-                  { path: "performance", element: <Navigate to="/performance/my-kpi" replace /> },
-                  { path: "performance/my-kpi", element: <PerformanceMyKPIDashboardPage /> },
-                  { path: "performance/my-kpi/planning", element: <PerformancePlanningPage /> },
-                  { path: "performance/my-kpi/goal-setting", element: <PerformanceGoalSettingPage /> },
-                  { path: "performance/my-kpi/check-in", element: <PerformanceCheckInPage /> },
-                  { path: "performance/my-kpi/evaluation", element: <PerformanceEvaluationPage /> },
-                  { path: "performance/my-kpi/year-end", element: <PerformanceYearEndPage /> },
-                  { path: "performance/my-team-kpi", element: <PerformanceMyTeamDashboardPage /> },
-                  { path: "performance/my-team-kpi/planning", element: <PerformanceMyTeamPlanningPage /> },
-                  { path: "performance/my-team-kpi/cascade", element: <PerformanceMyTeamCascadePage /> },
-                  { path: "performance/my-team-kpi/member/:memberId", element: <PerformanceMemberDetailPage /> },
-                  { path: "performance/my-team-kpi/planning/:memberId", element: <PerformanceMemberPlanningPage /> },
-                  { path: "performance/my-team-kpi/member", element: <Navigate to={`/performance/my-team-kpi/member/${perfDefaults.defaultMember}`} replace /> },
-                  { path: "performance/kpi-library", element: <PerformanceLibraryPage /> },
-                  { path: "performance/kpi-library/submit", element: <PerformanceLibrarySubmitPage /> },
-                  { path: "performance/kpi-library/:kpiId", element: <PerformanceLibraryDetailPage /> },
-                  { path: "performance/kpi-tree", element: <PerformanceTreePage /> },
-                  { path: "performance/kpi-headquarter", element: <AdminOnly><PerformanceHeadquarterPage /></AdminOnly> },
+                  { path: "performance", element: <LegacyPerformanceRedirect /> },
+                  { path: "performance/*", element: <LegacyPerformanceRedirect /> },
 
                   {
                     path: "performance-v2",

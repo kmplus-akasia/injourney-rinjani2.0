@@ -1,6 +1,7 @@
 import type { Dispatch, SetStateAction } from "react";
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import type { Notification, UserRole, UserSession } from "@rinjani/shared-types";
+import { subscribeJobTenderNotifications } from "@talent/lib/jobTenderNotifications";
 
 const SESSION_KEY = "rinjani-integrated-session";
 
@@ -81,6 +82,12 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     setSession(readStoredSession());
+  }, []);
+
+  useEffect(() => {
+    return subscribeJobTenderNotifications((notification) => {
+      setNotifications((current) => [notification, ...current]);
+    });
   }, []);
 
   const value = useMemo<SessionContextValue>(

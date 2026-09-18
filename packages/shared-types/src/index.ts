@@ -74,6 +74,7 @@ export interface PlatformManifest {
   iconKey: string;
   order: number;
   switcherLabel?: string;
+  hidden?: boolean;
 }
 
 export interface ModuleManifest {

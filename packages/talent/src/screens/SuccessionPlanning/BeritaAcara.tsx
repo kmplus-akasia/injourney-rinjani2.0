@@ -33,7 +33,7 @@ export function BeritaAcara({ position, onBack, onComplete }: BeritaAcaraProps) 
   };
 
   return (
-    <div className="flex flex-col h-full items-center justify-center bg-neutral-50 p-6">
+    <div className="flex min-h-full flex-col items-center justify-center bg-background">
       <div className="w-full max-w-2xl space-y-6">
         
         {/* Header */}

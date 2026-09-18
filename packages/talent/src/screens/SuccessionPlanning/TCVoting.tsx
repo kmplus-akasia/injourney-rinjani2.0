@@ -36,7 +36,7 @@ export function TCVoting({ position, candidate, onBack, onSubmit }: TCVotingProp
   ];
 
   return (
-    <div className="flex flex-col h-full bg-neutral-50 max-w-4xl mx-auto py-8 px-4">
+    <div className="mx-auto flex min-h-full max-w-4xl flex-col bg-background">
       
       {/* Header */}
       <div className="mb-8">
